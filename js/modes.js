@@ -1,3 +1,107 @@
+// ============ STANDALONE: CHOICE (中英互选) ============
+var cIdx=0,cWords=[],cOk=0,cWr=[],cType='cn2en';
+function startChoice(){
+  var u=getUnit(curUnit);if(!u||u.words.length<2){alert('\u81F3\u5C11\u9700\u89812\u4E2A\u5355\u8BCD');return;}
+  cWords=shuffle(u.words.slice());cIdx=0;cOk=0;cWr=[];cType='cn2en';
+  showPage('pageChoice');renderC();
+}
+function setChoiceType(t,el){cType=t;document.querySelectorAll('#pageChoice .tab-item').forEach(function(e){e.classList.remove('active');});if(el)el.classList.add('active');renderC();}
+function renderC(){
+  if(cIdx>=cWords.length){showResult(cOk,cWords.length,'\u4E2D\u82F1\u4E92\u9009\u5B8C\u6210');recordSession();return;}
+  dots('choiceProgress',cWords.length,cIdx,cWr);
+  var w=cWords[cIdx],u=getUnit(curUnit),gW=u.words,a=document.getElementById('choiceArea');
+  var stem,answer,opts;
+  if(cType==='cn2en'){stem=w.cn||'('+w.en+')';answer=w.en;opts=getDist(gW,w,'en');}
+  else{stem=w.en;answer=w.cn;opts=getDist(gW,w,'cn');speak(w.en);}
+  opts.push(answer);opts=shuffle(opts);
+  var spk=cType==='en2cn'?'<div style="text-align:center;margin-bottom:6px"><button class="speaker-btn" onclick="speak(\''+esc(w.en).replace(/'/g,"\\'")+'\')" style="font-size:26px">&#x1F50A;</button></div>':'';
+  a.innerHTML=spk+'<div class="q-stem">'+esc(stem)+'</div><div class="q-opts">'+opts.map(function(o){return '<div class="q-opt" onclick="pickC(this,\''+btoa(unescape(encodeURIComponent(o)))+'\',\''+btoa(unescape(encodeURIComponent(answer)))+'\')">'+esc(o)+'</div>';}).join('')+'</div><div class="answer-box" id="cAnsBox"></div>';
+}
+function pickC(el,selB,ansB){
+  var sel=decodeURIComponent(escape(atob(selB))),ans=decodeURIComponent(escape(atob(ansB)));
+  document.querySelectorAll('#choiceArea .q-opt').forEach(function(o){o.classList.add('disabled');});
+  if(sel===ans){el.classList.add('correct');cOk++;if(cWords[cIdx]._errKey)markErrCorrect(cWords[cIdx]._errKey);}
+  else{el.classList.add('wrong');cWr.push(cIdx);document.querySelectorAll('#choiceArea .q-opt').forEach(function(o){if(o.textContent===ans)o.classList.add('correct');});addToErrBank(cWords[cIdx],null);}
+  setTimeout(function(){cIdx++;renderC();},900);
+}
+
+// ============ STANDALONE: SPELL (拼写默写) ============
+var spIdx=0,spWords=[],spOk=0,spWr=[];
+function startSpell(){
+  var u=getUnit(curUnit);if(!u)return;
+  spWords=shuffle(u.words.slice());spIdx=0;spOk=0;spWr=[];
+  showPage('pageSpell');renderSp();
+}
+function renderSp(){
+  if(spIdx>=spWords.length){showResult(spOk,spWords.length,'\u62FC\u5199\u9ED8\u5199\u5B8C\u6210');recordSession();return;}
+  dots('spellProgress',spWords.length,spIdx,spWr);
+  var w=spWords[spIdx],boxes='';
+  for(var i=0;i<w.en.length;i++){if(w.en[i]===' ')boxes+='<span class="spell-space"></span>';else boxes+='<input class="spell-char" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">';}
+  document.getElementById('spellArea').innerHTML='<div style="text-align:center"><button class="speaker-btn" onclick="speak(\''+esc(w.en).replace(/'/g,"\\'")+'\')" style="font-size:30px">&#x1F50A;</button></div><div class="q-stem" style="color:var(--pri)">'+esc(w.cn)+'</div><div class="spell-wrap" id="spWrap">'+boxes+'</div><div style="text-align:center;margin-top:8px"><button class="btn btn-pri btn-sm" onclick="checkSp()" style="width:auto;padding:8px 24px">\u786E\u8BA4</button> <button class="btn btn-out btn-sm" onclick="showSpAns()" style="width:auto;padding:8px 16px">\u67E5\u770B\u7B54\u6848</button></div><div class="answer-box" id="spAnsBox"></div>';
+  speak(w.en);setTimeout(function(){bindSpellIn('spWrap','checkSp');},50);
+}
+function bindSpellIn(wrapId,checkFn){
+  var inputs=document.querySelectorAll('#'+wrapId+' .spell-char');
+  inputs.forEach(function(inp,idx){
+    inp.addEventListener('input',function(){if(this.value.length>1)this.value=this.value.charAt(this.value.length-1);if(this.value&&inputs[idx+1])inputs[idx+1].focus();});
+    inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&inputs[idx-1]){inputs[idx-1].focus();inputs[idx-1].value='';}if(e.key==='Enter')window[checkFn]();});
+  });if(inputs[0])inputs[0].focus();
+}
+function checkSp(){
+  var w=spWords[spIdx],inputs=document.querySelectorAll('#spWrap .spell-char'),ok=true,ci=0;
+  for(var i=0;i<w.en.length;i++){if(w.en[i]===' ')continue;var inp=inputs[ci];if(inp){if((inp.value||'').toLowerCase()===w.en[i].toLowerCase())inp.classList.add('correct');else{inp.classList.add('wrong');ok=false;}}ci++;}
+  var box=document.getElementById('spAnsBox');
+  if(ok){spOk++;box.innerHTML='\u2705 \u62FC\u5199\u6B63\u786E\uFF01';box.className='answer-box show';box.style.borderLeftColor='var(--ok)';box.style.background='#f0fdf4';box.style.color='#166534';setTimeout(function(){spIdx++;renderSp();},900);}
+  else{spWr.push(spIdx);box.innerHTML='\u274C \u6B63\u786E\u62FC\u5199\uFF1A<strong>'+esc(w.en)+'</strong>';box.className='answer-box show';addToErrBank(w,null);setTimeout(function(){spIdx++;renderSp();},2000);}
+}
+function showSpAns(){var box=document.getElementById('spAnsBox');box.innerHTML='\u{1F4A1} \u7B54\u6848\uFF1A<strong>'+esc(spWords[spIdx].en)+'</strong>';box.className='answer-box show';}
+
+// ============ STANDALONE: SENTENCE FILL (句子填空) ============
+var sfIdx=0,sfSents=[],sfOk=0,sfWr=[];
+function startSentFill(){
+  var u=getUnit(curUnit);if(!u||!(u.sentences||[]).length){alert('\u6B64\u8BCD\u5E93\u6CA1\u6709\u53E5\u5B50');return;}
+  sfSents=shuffle(u.sentences.slice());sfIdx=0;sfOk=0;sfWr=[];
+  showPage('pageSentFill');renderSF2();
+}
+function renderSF2(){
+  if(sfIdx>=sfSents.length){showResult(sfOk,sfSents.length,'\u53E5\u5B50\u586B\u7A7A\u5B8C\u6210');recordSession();return;}
+  dots('sfProgress',sfSents.length,sfIdx,sfWr);
+  var s=sfSents[sfIdx],ws=s.en.split(/\s+/),bl=[];
+  if(ws.length<=3)bl=[0|Math.random()*ws.length];
+  else{var p1=0|Math.random()*ws.length;bl=[p1];if(ws.length>5){var p2;do{p2=0|Math.random()*ws.length}while(p2===p1);bl.push(p2);}}
+  var h='';ws.forEach(function(w,i){if(bl.indexOf(i)>=0){var c=w.replace(/[.,!?;:'"]/g,'');h+='<input class="blank-input" data-answer="'+esc(c)+'" data-orig="'+esc(w)+'" style="width:'+Math.max(50,c.length*13)+'px" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"> ';}else h+=esc(w)+' ';});
+  document.getElementById('sfArea').innerHTML='<div class="q-stem" style="font-size:13px;color:var(--pri)">'+esc(s.cn||'')+'</div><div style="text-align:center;margin-bottom:6px"><button class="speaker-btn" onclick="speak(\''+esc(s.en).replace(/'/g,"\\'")+'\')" style="font-size:24px">&#x1F50A;</button></div><div class="sent-fill">'+h+'</div><div style="text-align:center;margin-top:8px"><button class="btn btn-pri btn-sm" onclick="checkSF2()" style="width:auto;padding:8px 24px">\u786E\u8BA4</button> <button class="btn btn-out btn-sm" onclick="showSF2Ans()" style="width:auto;padding:8px 16px">\u67E5\u770B\u7B54\u6848</button></div><div class="answer-box" id="sfAnsBox"></div>';
+}
+function checkSF2(){
+  var inputs=document.querySelectorAll('#sfArea .blank-input'),ok=true;
+  inputs.forEach(function(inp){var ans=inp.dataset.answer.toLowerCase().replace(/[.,!?;:'"]/g,''),val=(inp.value||'').trim().toLowerCase().replace(/[.,!?;:'"]/g,'');if(val===ans){inp.style.color='var(--ok)';inp.style.fontWeight='700';}else{inp.style.color='var(--err)';inp.style.fontWeight='700';ok=false;}});
+  var box=document.getElementById('sfAnsBox');
+  if(ok){sfOk++;box.innerHTML='\u2705 \u6B63\u786E\uFF01';box.className='answer-box show';box.style.borderLeftColor='var(--ok)';box.style.background='#f0fdf4';box.style.color='#166534';setTimeout(function(){sfIdx++;renderSF2();},900);}
+  else{sfWr.push(sfIdx);box.innerHTML='\u274C \u5B8C\u6574\u53E5\u5B50\uFF1A<strong>'+esc(sfSents[sfIdx].en)+'</strong>';box.className='answer-box show';addToErrBank(null,sfSents[sfIdx]);setTimeout(function(){sfIdx++;renderSF2();},2500);}
+}
+function showSF2Ans(){var box=document.getElementById('sfAnsBox');box.innerHTML='\u{1F4A1} '+esc(sfSents[sfIdx].en);box.className='answer-box show';}
+
+// ============ STANDALONE: SENTENCE WRITE (整句默写) ============
+var swIdx2=0,swSents2=[],swOk2=0,swWr2=[];
+function startSentWrite(){
+  var u=getUnit(curUnit);if(!u||!(u.sentences||[]).length){alert('\u6B64\u8BCD\u5E93\u6CA1\u6709\u53E5\u5B50');return;}
+  swSents2=shuffle(u.sentences.slice());swIdx2=0;swOk2=0;swWr2=[];
+  showPage('pageSentWrite');renderSW2();
+}
+function renderSW2(){
+  if(swIdx2>=swSents2.length){showResult(swOk2,swSents2.length,'\u6574\u53E5\u9ED8\u5199\u5B8C\u6210');recordSession();return;}
+  dots('swProgress2',swSents2.length,swIdx2,swWr2);
+  var s=swSents2[swIdx2];
+  document.getElementById('swArea').innerHTML='<div class="q-stem" style="font-size:14px;color:var(--pri)">'+esc(s.cn||'\u8BF7\u9ED8\u5199')+'</div><textarea id="swInput2" placeholder="\u8BF7\u8F93\u5165\u82F1\u6587\u53E5\u5B50..." style="width:100%;height:80px;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px;font-size:15px;outline:none;resize:none;font-family:inherit;margin-top:6px"></textarea><div style="text-align:center;margin-top:8px"><button class="btn btn-pri btn-sm" onclick="checkSW2()" style="width:auto;padding:8px 24px">\u786E\u8BA4</button> <button class="btn btn-out btn-sm" onclick="showSW2Ans()" style="width:auto;padding:8px 16px">\u67E5\u770B\u7B54\u6848</button></div><div class="answer-box" id="swAnsBox2"></div>';
+}
+function checkSW2(){
+  var s=swSents2[swIdx2],input=(document.getElementById('swInput2').value||'').trim().toLowerCase().replace(/[^a-z0-9\s]/g,''),target=s.en.toLowerCase().replace(/[^a-z0-9\s]/g,'');
+  var box=document.getElementById('swAnsBox2');
+  if(levenshtein(input,target)<=Math.max(3,Math.floor(target.length*.15))){swOk2++;box.innerHTML='\u2705 \u6B63\u786E\uFF01';box.className='answer-box show';box.style.borderLeftColor='var(--ok)';box.style.background='#f0fdf4';box.style.color='#166534';setTimeout(function(){swIdx2++;renderSW2();},1000);}
+  else{swWr2.push(swIdx2);box.innerHTML='\u274C \u7B54\u6848\uFF1A<strong>'+esc(s.en)+'</strong>';box.className='answer-box show';addToErrBank(null,s);setTimeout(function(){swIdx2++;renderSW2();},3000);}
+}
+function showSW2Ans(){var box=document.getElementById('swAnsBox2');box.innerHTML='\u{1F4A1} '+esc(swSents2[swIdx2].en);box.className='answer-box show';}
+
 // ============ FLASHCARD ============
 var fIdx=0,fWords=[];
 function startFlash(){var u=getUnit(curUnit);if(!u)return;fWords=u.words.slice();fIdx=0;renderF();showPage('pageFlash');}
