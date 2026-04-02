@@ -177,6 +177,62 @@ function showUnitSelect(){
   showPage('pageUnitSel');
 }
 
+// ============ STUDY WORDS / SENTS / TEST MENU ============
+var studySelUnit=null;
+
+function renderUnitRadioList(containerId,filterSents){
+  var html='';
+  var colors=['#667eea','#22c55e','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
+  db.units.forEach(function(u,i){
+    if(filterSents&&(!u.sentences||!u.sentences.length))return;
+    var wc=u.words.length,sc=(u.sentences||[]).length;
+    var checked=studySelUnit===u.id;
+    html+='<div class="wb-item" onclick="studySelUnit=\''+u.id+'\';renderUnitRadioList(\''+containerId+'\','+(filterSents?'true':'false')+')" style="border:2px solid '+(checked?'var(--pri)':'transparent')+'"><div class="wb-icon" style="background:'+colors[i%6]+'20;color:'+colors[i%6]+'">\u{1F4D6}</div><div class="wb-info"><h3>'+esc(u.name)+'</h3><p>'+wc+'\u5355\u8BCD'+(sc?' \u00B7 '+sc+'\u53E5\u5B50':'')+'</p></div>'+(checked?'<div style="color:var(--pri);font-size:18px">\u2713</div>':'')+'</div>';
+  });
+  if(!html)html='<div class="empty-state"><p>\u8BF7\u5148\u6DFB\u52A0\u8BCD\u5E93</p></div>';
+  document.getElementById(containerId).innerHTML=html;
+}
+
+function goStudyWords(){
+  if(!db.units.length){alert('\u8BF7\u5148\u6DFB\u52A0\u8BCD\u5E93');return;}
+  studySelUnit=db.units[0].id;
+  showPage('pageStudyWords');
+  renderUnitRadioList('swUnitList',false);
+}
+function goStudySents(){
+  if(!db.units.length){alert('\u8BF7\u5148\u6DFB\u52A0\u8BCD\u5E93');return;}
+  studySelUnit=db.units[0].id;
+  showPage('pageStudySents');
+  renderUnitRadioList('ssUnitList',true);
+}
+function goTestMenu(){
+  if(!db.units.length){alert('\u8BF7\u5148\u6DFB\u52A0\u8BCD\u5E93');return;}
+  studySelUnit=db.units[0].id;
+  showPage('pageTestMenu');
+  renderUnitRadioList('tmUnitList',false);
+}
+
+function launchWordMode(mode){
+  if(!studySelUnit){alert('\u8BF7\u5148\u9009\u62E9\u5355\u5143');return;}
+  curUnit=studySelUnit;
+  if(mode==='flash')startFlash();
+  else if(mode==='choice')startChoice();
+  else if(mode==='spell')startSpell();
+}
+function launchSentMode(mode){
+  if(!studySelUnit){alert('\u8BF7\u5148\u9009\u62E9\u5355\u5143');return;}
+  curUnit=studySelUnit;
+  if(mode==='flash')startSentFlash();
+  else if(mode==='fill')startSentFill();
+  else if(mode==='write')startSentWrite();
+}
+function launchTest(type){
+  if(!studySelUnit){alert('\u8BF7\u5148\u9009\u62E9\u5355\u5143');return;}
+  selectedUnits=[studySelUnit];
+  if(type==='word')startWordTest();
+  else startSentTest();
+}
+
 // ============ DEMO ============
 function addDemo(){
   if(db.units.length)return;

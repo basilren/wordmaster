@@ -42,8 +42,15 @@ function renderSp(){
 }
 function bindSpellIn(wrapId,checkFn){
   var inputs=document.querySelectorAll('#'+wrapId+' .spell-char');
+  var composing=false;
   inputs.forEach(function(inp,idx){
-    inp.addEventListener('input',function(){if(this.value.length>1)this.value=this.value.charAt(this.value.length-1);if(this.value&&inputs[idx+1])inputs[idx+1].focus();});
+    inp.addEventListener('compositionstart',function(){composing=true;});
+    inp.addEventListener('compositionend',function(){composing=false;this.value=this.value.slice(-1);if(this.value&&inputs[idx+1])inputs[idx+1].focus();});
+    inp.addEventListener('input',function(){
+      if(composing)return;
+      if(this.value.length>1)this.value=this.value.slice(-1);
+      if(this.value&&inputs[idx+1])inputs[idx+1].focus();
+    });
     inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&inputs[idx-1]){inputs[idx-1].focus();inputs[idx-1].value='';}if(e.key==='Enter')window[checkFn]();});
   });if(inputs[0])inputs[0].focus();
 }
@@ -101,6 +108,62 @@ function checkSW2(){
   else{swWr2.push(swIdx2);box.innerHTML='\u274C \u7B54\u6848\uFF1A<strong>'+esc(s.en)+'</strong>';box.className='answer-box show';addToErrBank(null,s);setTimeout(function(){swIdx2++;renderSW2();},3000);}
 }
 function showSW2Ans(){var box=document.getElementById('swAnsBox2');box.innerHTML='\u{1F4A1} '+esc(swSents2[swIdx2].en);box.className='answer-box show';}
+
+// ============ SENTENCE FLASHCARD ============
+var sfIdx2=0,sfSents3=[];
+function startSentFlash(){
+  var u=getUnit(curUnit);if(!u||!(u.sentences||[]).length){alert('\u6B64\u8BCD\u5E93\u6CA1\u6709\u53E5\u5B50');return;}
+  sfSents3=u.sentences.slice();sfIdx2=0;renderSF3();showPage('pageSentFlash');
+}
+function renderSF3(){
+  if(sfIdx2>=sfSents3.length){showResult(sfSents3.length,sfSents3.length,'\u53E5\u5B50\u7FFB\u5361\u5B8C\u6210');return;}
+  var s=sfSents3[sfIdx2];
+  document.getElementById('sfEn').textContent=s.en;
+  document.getElementById('sfCn').textContent=s.cn||'';
+  document.getElementById('sfCard').classList.remove('flipped');
+  document.getElementById('sfCounter').textContent=(sfIdx2+1)+'/'+sfSents3.length;
+  dots('sentFlashProgress',sfSents3.length,sfIdx2,[]);
+  speak(s.en);
+}
+function flipSentCard(){document.getElementById('sfCard').classList.toggle('flipped');}
+function sfSpeak(){if(sfSents3[sfIdx2])speak(sfSents3[sfIdx2].en);}
+function sfPrev(){if(sfIdx2>0){sfIdx2--;renderSF3();}}
+function sfNext(){sfIdx2++;if(sfIdx2>=sfSents3.length)showResult(sfSents3.length,sfSents3.length,'\u53E5\u5B50\u7FFB\u5361\u5B8C\u6210');else renderSF3();}
+
+// ============ WORD-ONLY TEST & SENT-ONLY TEST ============
+function startWordTest(){
+  var allW=[],gW=[];
+  selectedUnits.forEach(function(id){var u=getUnit(id);if(!u)return;u.words.forEach(function(w){allW.push({en:w.en,cn:w.cn});});});
+  db.units.forEach(function(u){u.words.forEach(function(w){gW.push(w);});});
+  allW=shuffle(allW);
+  var qs=[];
+  // cn2en 35%
+  var n1=Math.max(3,Math.ceil(12*.35));
+  for(var i=0;i<Math.min(n1,allW.length);i++){var w=allW[i];var opts=getDist(gW,w,'en');opts.push(w.en);qs.push({type:'cn2en',stem:w.cn||'('+w.en+')',answer:w.en,opts:shuffle(opts),word:w});}
+  // en2cn 35%
+  var n2=Math.max(3,Math.ceil(12*.35));
+  for(var i=0;i<Math.min(n2,allW.length);i++){var w=allW[(i+n1)%allW.length];var opts=getDist(gW,w,'cn');opts.push(w.cn);qs.push({type:'en2cn',stem:w.en,answer:w.cn,opts:shuffle(opts),word:w});}
+  // spell 30%
+  var n3=Math.max(2,Math.ceil(12*.3));
+  for(var i=0;i<Math.min(n3,allW.length);i++){qs.push({type:'spell',word:allW[(i+n1+n2)%allW.length]});}
+  quizQs=shuffle(qs).slice(0,Math.min(15,Math.max(10,qs.length)));
+  quizIdx=0;quizCorrect=0;quizWrongs=[];showPage('pageQuiz');renderQ();
+}
+function startSentTest(){
+  var allS=[];
+  selectedUnits.forEach(function(id){var u=getUnit(id);if(!u)return;(u.sentences||[]).forEach(function(s){allS.push({en:s.en,cn:s.cn});});});
+  if(!allS.length){alert('\u6240\u9009\u5355\u5143\u6CA1\u6709\u53E5\u5B50');return;}
+  allS=shuffle(allS);
+  var qs=[];
+  // sentfill 50%
+  var n1=Math.max(3,Math.ceil(10*.5));
+  for(var i=0;i<Math.min(n1,allS.length);i++)qs.push({type:'sentfill',sent:allS[i]});
+  // sentwrite 50%
+  var n2=Math.max(3,Math.ceil(10*.5));
+  for(var i=0;i<Math.min(n2,allS.length);i++)qs.push({type:'sentwrite',sent:allS[(i+n1)%allS.length]});
+  quizQs=shuffle(qs).slice(0,Math.min(12,Math.max(8,qs.length)));
+  quizIdx=0;quizCorrect=0;quizWrongs=[];showPage('pageQuiz');renderQ();
+}
 
 // ============ FLASHCARD ============
 var fIdx=0,fWords=[];

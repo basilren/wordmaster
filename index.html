@@ -31,10 +31,10 @@
     <div class="stat-box"><div class="stat-num" id="hStatErr">0</div><div class="stat-label">错题数</div></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div class="mode-card" onclick="goStudyWords()"><div class="m-icon">&#x1F4D6;</div><div class="m-title">背单词</div><div class="m-desc">翻卡/中英互选/拼写</div></div>
+    <div class="mode-card" onclick="goStudySents()"><div class="m-icon">&#x1F4DD;</div><div class="m-title">背句子</div><div class="m-desc">翻卡/填空/默写</div></div>
+    <div class="mode-card" onclick="goTestMenu()"><div class="m-icon">&#x1F3AF;</div><div class="m-title">综合测试</div><div class="m-desc">单词测试/句子测试</div></div>
     <div class="mode-card" onclick="navTo('pageWordbank');setTimeout(function(){document.getElementById('fileInput2')&&document.getElementById('fileInput2').click()},300)"><div class="m-icon">&#x1F4F7;</div><div class="m-title">拍照上传</div><div class="m-desc">识别课本单词</div></div>
-    <div class="mode-card" onclick="if(!db.units.length){alert('\u8BF7\u5148\u6DFB\u52A0\u8BCD\u5E93');return;}showUnitSelect()"><div class="m-icon">&#x1F4DD;</div><div class="m-title">综合测试</div><div class="m-desc">多单元混合出题</div></div>
-    <div class="mode-card" onclick="if(!db.units.length){alert('\u8BF7\u5148\u6DFB\u52A0\u8BCD\u5E93');return;}curUnit=db.units[0].id;startFlash()"><div class="m-icon">&#x1F0CF;</div><div class="m-title">背单词</div><div class="m-desc">翻卡点读学习</div></div>
-    <div class="mode-card" onclick="navTo('pageErr')"><div class="m-icon">&#x1F4D5;</div><div class="m-title">错题库</div><div class="m-desc">复习易错内容</div></div>
   </div>
 </div>
 
@@ -55,6 +55,63 @@
   <div class="card"><div class="card-title">&#x270F;&#xFE0F; 编辑词库</div><input id="unitName" placeholder="词库名称" style="width:100%;padding:9px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none;margin-bottom:8px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">单词</div><div id="editWordList"></div><button class="btn btn-out btn-sm" onclick="addEditWord()" style="margin-top:4px">+ 添加</button></div>
   <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:4px">句子</div><div id="editSentList"></div><button class="btn btn-out btn-sm" onclick="addEditSent()" style="margin-top:4px">+ 添加</button></div>
   <button class="btn btn-pri" onclick="saveUnit()" style="margin-top:6px">&#x1F4BE; 保存</button>
+</div>
+
+<!-- STUDY WORDS MENU -->
+<div class="page" id="pageStudyWords">
+  <div class="card"><div class="card-title">&#x1F4D6; 背单词</div><div class="card-desc">选择一个单元开始背单词</div></div>
+  <div id="swUnitList"></div>
+  <div class="card-title" style="margin-top:8px">&#x1F3AF; 练习方式</div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="launchWordMode('flash')"><div class="m-icon">&#x1F0CF;</div><div class="m-title">翻卡学习</div><div class="m-desc">点读+翻转看释义</div></div>
+    <div class="mode-card" onclick="launchWordMode('choice')"><div class="m-icon">&#x1F524;</div><div class="m-title">中英互选</div><div class="m-desc">给中选英/给英选中</div></div>
+    <div class="mode-card" onclick="launchWordMode('spell')"><div class="m-icon">&#x270F;&#xFE0F;</div><div class="m-title">拼写默写</div><div class="m-desc">听发音拼写单词</div></div>
+  </div>
+</div>
+
+<!-- STUDY SENTENCES MENU -->
+<div class="page" id="pageStudySents">
+  <div class="card"><div class="card-title">&#x1F4DD; 背句子</div><div class="card-desc">选择一个单元开始背句子</div></div>
+  <div id="ssUnitList"></div>
+  <div class="card-title" style="margin-top:8px">&#x1F3AF; 练习方式</div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="launchSentMode('flash')"><div class="m-icon">&#x1F0CF;</div><div class="m-title">翻卡学习</div><div class="m-desc">点读+翻转看中文</div></div>
+    <div class="mode-card" onclick="launchSentMode('fill')"><div class="m-icon">&#x1F4DD;</div><div class="m-title">句子填空</div><div class="m-desc">补全缺失的单词</div></div>
+    <div class="mode-card" onclick="launchSentMode('write')"><div class="m-icon">&#x1F4D6;</div><div class="m-title">整句默写</div><div class="m-desc">看中文写英文</div></div>
+  </div>
+</div>
+
+<!-- TEST MENU -->
+<div class="page" id="pageTestMenu">
+  <div class="card"><div class="card-title">&#x1F3AF; 综合测试</div><div class="card-desc">选择单元，自动出题检测</div></div>
+  <div id="tmUnitList"></div>
+  <div class="card-title" style="margin-top:8px">&#x1F4CB; 测试类型</div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <button class="btn btn-pri" onclick="launchTest('word')" style="font-size:14px">&#x1F4D6; 单词综合测试</button>
+    <button class="btn btn-out" onclick="launchTest('sent')" style="font-size:14px">&#x1F4DD; 句子综合测试</button>
+  </div>
+</div>
+
+<!-- SENTENCE FLASHCARD -->
+<div class="page" id="pageSentFlash">
+  <div class="quiz-progress" id="sentFlashProgress"></div>
+  <div style="perspective:1000px;width:100%;height:210px;cursor:pointer;margin-bottom:12px" id="sfCard" onclick="flipSentCard()">
+    <div style="position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d" class="sf-inner">
+      <div style="position:absolute;width:100%;height:100%;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:16px;background:linear-gradient(135deg,#22c55e,#059669);color:#fff">
+        <button class="speaker-btn" onclick="event.stopPropagation();sfSpeak()" style="color:#fff;font-size:24px;position:absolute;top:10px;right:10px">&#x1F50A;</button>
+        <div style="font-size:18px;font-weight:600;line-height:1.4;text-align:center" id="sfEn"></div>
+        <div style="font-size:11px;opacity:.7;margin-top:6px">点击翻转看中文</div>
+      </div>
+      <div style="position:absolute;width:100%;height:100%;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:16px;background:#fff;transform:rotateY(180deg)">
+        <div style="font-size:18px;font-weight:600;color:var(--pri);text-align:center;line-height:1.4" id="sfCn"></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:center;align-items:center">
+    <button class="btn btn-out btn-sm" onclick="sfPrev()">&#x2B05; 上一个</button>
+    <span style="font-size:12px;color:var(--txt2);font-weight:600" id="sfCounter"></span>
+    <button class="btn btn-pri btn-sm" onclick="sfNext()">下一个 &#x27A1;</button>
+  </div>
 </div>
 
 <!-- UNIT DETAIL -->
@@ -194,6 +251,6 @@
 <script src="js/pages.js"></script>
 <script src="js/quiz.js"></script>
 <script src="js/modes.js"></script>
-<style>#fCard.flipped .f-inner{transform:rotateY(180deg);}</style>
+<style>#fCard.flipped .f-inner{transform:rotateY(180deg);}#sfCard.flipped .sf-inner{transform:rotateY(180deg);}</style>
 </body>
 </html>

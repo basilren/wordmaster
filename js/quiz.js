@@ -64,11 +64,18 @@ function renderQ(){
   }
 }
 
-// Spell input binding (fix double-input)
+// Spell input binding (fix double-input on mobile)
 function bindSpell(){
   var inputs=document.querySelectorAll('#spellWrap .spell-char');
+  var composing=false;
   inputs.forEach(function(inp,idx){
-    inp.addEventListener('input',function(){if(this.value.length>1)this.value=this.value.charAt(this.value.length-1);if(this.value&&inputs[idx+1])inputs[idx+1].focus();});
+    inp.addEventListener('compositionstart',function(){composing=true;});
+    inp.addEventListener('compositionend',function(){composing=false;this.value=this.value.slice(-1);if(this.value&&inputs[idx+1])inputs[idx+1].focus();});
+    inp.addEventListener('input',function(){
+      if(composing)return;
+      if(this.value.length>1)this.value=this.value.slice(-1);
+      if(this.value&&inputs[idx+1])inputs[idx+1].focus();
+    });
     inp.addEventListener('keydown',function(e){if(e.key==='Backspace'&&!this.value&&inputs[idx-1]){inputs[idx-1].focus();inputs[idx-1].value='';}if(e.key==='Enter')checkSpell();});
   });if(inputs[0])inputs[0].focus();
 }
