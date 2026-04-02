@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>WordMaster</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="header"><button class="back-btn" id="backBtn" onclick="goBack()" style="display:none">&#8249;</button><h1 id="headerTitle">WordMaster</h1><div class="sub" id="headerSub">英语背诵小助手</div></div>
+
+<!-- LOGIN -->
+<div class="page active" id="pageLogin">
+  <div style="padding:40px 0 20px;text-align:center"><div style="font-size:48px">&#x1F4DA;</div><div style="font-size:20px;font-weight:700;margin-top:8px">WordMaster</div><div style="font-size:13px;color:var(--txt2)">英语背诵小助手</div></div>
+  <div class="card">
+    <div class="card-title">&#x1F464; 输入昵称开始</div>
+    <input id="loginName" placeholder="请输入你的昵称" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;outline:none;margin-bottom:10px" onkeyup="if(event.key==='Enter')doLogin()">
+    <button class="btn btn-pri" onclick="doLogin()">开始学习</button>
+  </div>
+  <div class="card" style="margin-top:4px"><div class="card-title" style="font-size:13px">已有账号</div><div id="userListArea"><p style="color:var(--txt2);font-size:12px">还没有用户</p></div></div>
+</div>
+
+<!-- HOME -->
+<div class="page" id="pageHome">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div style="font-size:16px;font-weight:700">Hi, <span id="hUser"></span> &#x1F44B;</div><button class="btn btn-out btn-sm" onclick="logoutUser()" style="font-size:11px;padding:5px 10px">切换用户</button></div>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-num" id="hStatWords">0</div><div class="stat-label">已学单词</div></div>
+    <div class="stat-box"><div class="stat-num" id="hStatMaster">0</div><div class="stat-label">已掌握</div></div>
+    <div class="stat-box"><div class="stat-num" id="hStatStreak">0</div><div class="stat-label">连续打卡</div></div>
+    <div class="stat-box"><div class="stat-num" id="hStatErr">0</div><div class="stat-label">错题数</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div class="mode-card" onclick="navTo('pageWordbank');setTimeout(function(){document.getElementById('fileInput2')&&document.getElementById('fileInput2').click()},300)"><div class="m-icon">&#x1F4F7;</div><div class="m-title">拍照上传</div><div class="m-desc">识别课本单词</div></div>
+    <div class="mode-card" onclick="if(!db.units.length){alert('\u8BF7\u5148\u6DFB\u52A0\u8BCD\u5E93');return;}showUnitSelect()"><div class="m-icon">&#x1F4DD;</div><div class="m-title">综合测试</div><div class="m-desc">多单元混合出题</div></div>
+    <div class="mode-card" onclick="if(!db.units.length){alert('\u8BF7\u5148\u6DFB\u52A0\u8BCD\u5E93');return;}curUnit=db.units[0].id;startFlash()"><div class="m-icon">&#x1F0CF;</div><div class="m-title">背单词</div><div class="m-desc">翻卡点读学习</div></div>
+    <div class="mode-card" onclick="navTo('pageErr')"><div class="m-icon">&#x1F4D5;</div><div class="m-title">错题库</div><div class="m-desc">复习易错内容</div></div>
+  </div>
+</div>
+
+<!-- WORDBANK -->
+<div class="page" id="pageWordbank">
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <div class="upload-zone" onclick="document.getElementById('fileInput2').click()" style="flex:1;padding:16px 8px"><div class="icon" style="font-size:24px">&#x1F4F7;</div><p style="font-size:11px">拍照上传</p><input type="file" id="fileInput2" accept="image/*" capture="environment" onchange="handleImageUpload(event)" style="display:none"></div>
+    <div class="upload-zone" onclick="showManual()" style="flex:1;padding:16px 8px;border-color:var(--pri)"><div class="icon" style="font-size:24px">&#x270F;&#xFE0F;</div><p style="font-size:11px">手动创建</p></div>
+  </div>
+  <div id="ocrPreview" style="display:none;margin-bottom:10px"><img id="previewImg" style="width:100%;border-radius:10px;margin-bottom:6px"><div id="ocrStatus"></div></div>
+  <div class="card-title">&#x1F4DA; 我的词库</div>
+  <div id="wbList2"></div>
+  <div id="wbEmpty2" class="empty-state" style="display:none"><div class="icon">&#x1F4DA;</div><p>还没有词库</p></div>
+</div>
+
+<!-- EDIT -->
+<div class="page" id="pageEdit">
+  <div class="card"><div class="card-title">&#x270F;&#xFE0F; 编辑词库</div><input id="unitName" placeholder="词库名称" style="width:100%;padding:9px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none;margin-bottom:8px"><div style="font-size:13px;font-weight:600;margin-bottom:4px">单词</div><div id="editWordList"></div><button class="btn btn-out btn-sm" onclick="addEditWord()" style="margin-top:4px">+ 添加</button></div>
+  <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:4px">句子</div><div id="editSentList"></div><button class="btn btn-out btn-sm" onclick="addEditSent()" style="margin-top:4px">+ 添加</button></div>
+  <button class="btn btn-pri" onclick="saveUnit()" style="margin-top:6px">&#x1F4BE; 保存</button>
+</div>
+
+<!-- UNIT DETAIL -->
+<div class="page" id="pageDetail">
+  <div class="card"><div class="card-title" id="detailTitle"></div><div class="card-desc" id="detailDesc"></div></div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="startFlash()"><div class="m-icon">&#x1F0CF;</div><div class="m-title">翻卡学习</div></div>
+    <div class="mode-card" onclick="curUnit&&(selectedUnits=[curUnit])&&startQuiz()"><div class="m-icon">&#x1F4DD;</div><div class="m-title">综合检测</div></div>
+    <div class="mode-card" onclick="startVoice()"><div class="m-icon">&#x1F3A4;</div><div class="m-title">语音朗读</div></div>
+  </div>
+  <div style="margin-top:12px"><button class="btn btn-out" onclick="editUnit(curUnit)" style="font-size:12px">&#x270F;&#xFE0F; 编辑</button><button class="btn btn-danger" onclick="deleteUnit(curUnit)" style="font-size:12px;margin-top:6px">&#x1F5D1;&#xFE0F; 删除</button></div>
+</div>
+
+<!-- UNIT SELECT -->
+<div class="page" id="pageUnitSel">
+  <div class="card"><div class="card-title">&#x2705; 选择单元</div><div class="card-desc" id="selCount"></div></div>
+  <div id="unitSelList"></div>
+  <button class="btn btn-pri" id="startQuizBtn" onclick="startQuiz()" style="margin-top:8px;display:none">&#x1F680; 开始检测</button>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="pageQuiz">
+  <div class="quiz-progress" id="quizProgress"></div>
+  <div style="text-align:center;font-size:12px;color:var(--txt2);margin-bottom:4px" id="quizNum"></div>
+  <div class="card" id="quizArea"></div>
+</div>
+
+<!-- FLASHCARD -->
+<div class="page" id="pageFlash">
+  <div class="quiz-progress" id="flashProgress"></div>
+  <div style="perspective:1000px;width:100%;height:210px;cursor:pointer;margin-bottom:12px" id="fCard" onclick="flipCard()">
+    <div style="position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d" class="f-inner">
+      <div style="position:absolute;width:100%;height:100%;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">
+        <button class="speaker-btn" onclick="event.stopPropagation();fSpeak()" style="color:#fff;font-size:24px;position:absolute;top:10px;right:10px">&#x1F50A;</button>
+        <div style="font-size:30px;font-weight:700" id="fWord"></div>
+        <div style="font-size:11px;opacity:.7;margin-top:4px">点击翻转看释义</div>
+      </div>
+      <div style="position:absolute;width:100%;height:100%;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:16px;background:#fff;transform:rotateY(180deg)">
+        <div style="font-size:24px;font-weight:600;color:var(--pri)" id="fCn"></div>
+        <div style="font-size:12px;color:var(--txt2);margin-top:8px;text-align:center" id="fSent"></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:center;align-items:center">
+    <button class="btn btn-out btn-sm" onclick="fPrev()">&#x2B05; 上一个</button>
+    <span style="font-size:12px;color:var(--txt2);font-weight:600" id="fCounter"></span>
+    <button class="btn btn-pri btn-sm" onclick="fNext()">下一个 &#x27A1;</button>
+  </div>
+  <div style="text-align:center;margin-top:10px"><button class="btn btn-ok btn-sm" onclick="fMaster()" style="width:auto;padding:6px 16px">&#x2705; 已掌握</button></div>
+</div>
+
+<!-- VOICE -->
+<div class="page" id="pageVoice">
+  <div class="quiz-progress" id="voiceProgress"></div>
+  <div class="card" style="text-align:center">
+    <div style="font-size:20px;font-weight:700;color:var(--pri);margin:6px 0" id="vTarget"></div>
+    <div style="font-size:12px;color:var(--txt2)" id="vCn"></div>
+    <div style="margin:4px 0"><button class="speaker-btn" onclick="vSpeak()">&#x1F50A; 听一遍</button></div>
+    <div style="padding:14px 0"><button class="voice-btn" id="vBtn" onclick="toggleVoice()">&#x1F3A4;</button><div style="font-size:10px;color:var(--txt2);margin-top:4px">点击朗读</div></div>
+    <div style="font-size:14px;font-weight:600;min-height:24px" id="vResult"></div>
+    <button class="btn btn-pri btn-sm" onclick="vNext()" style="margin-top:8px;width:auto;padding:7px 24px">下一个 &#x27A1;</button>
+  </div>
+</div>
+
+<!-- ERRORS -->
+<div class="page" id="pageErr">
+  <div class="card"><div class="card-title">&#x1F4D5; 错题库</div><div class="card-desc" id="errCount">0 个错题</div><div class="card-desc" style="margin-top:4px;font-size:11px">&#x1F4A1; 连续答对 3 次自动消除</div></div>
+  <button class="btn btn-pri" id="errQuizBtn" onclick="startErrQuiz()" style="margin-bottom:8px;display:none">&#x1F525; 错题复习检测</button>
+  <div id="errList"></div>
+  <div id="errEmpty" class="empty-state" style="display:none"><div class="icon">&#x1F389;</div><p>没有错题，继续保持！</p></div>
+</div>
+
+<!-- STATS -->
+<div class="page" id="pageStats">
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-num" id="s_total">0</div><div class="stat-label">总单词</div></div>
+    <div class="stat-box"><div class="stat-num" id="s_master">0</div><div class="stat-label">已掌握</div></div>
+    <div class="stat-box"><div class="stat-num" id="s_sess">0</div><div class="stat-label">练习次数</div></div>
+    <div class="stat-box"><div class="stat-num" id="s_streak">0</div><div class="stat-label">连续打卡</div></div>
+  </div>
+  <div class="card" id="calArea"></div>
+</div>
+
+<!-- NAV -->
+<div class="bottom-nav" id="bottomNav" style="display:none">
+  <div class="nav-item active" onclick="navTo('pageHome')"><div class="icon">&#x1F3E0;</div>首页</div>
+  <div class="nav-item" onclick="navTo('pageWordbank')"><div class="icon">&#x1F4DA;</div>词库</div>
+  <div class="nav-item" onclick="navTo('pageErr')"><div class="icon">&#x1F4D5;</div>错题</div>
+  <div class="nav-item" onclick="navTo('pageStats')"><div class="icon">&#x1F4CA;</div>记录</div>
+</div>
+
+<!-- RESULT -->
+<div class="result-overlay" id="resultOverlay" style="display:none" onclick="closeResult()">
+  <div class="result-box pop" onclick="event.stopPropagation()">
+    <div class="result-emoji" id="resultEmoji"></div>
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-score" id="resultScoreNum"></div>
+    <div class="result-desc" id="resultDesc"></div>
+    <button class="btn btn-pri" onclick="closeResult()">好的</button>
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/modes.js"></script>
+<style>#fCard.flipped .f-inner{transform:rotateY(180deg);}</style>
+</body>
+</html>
