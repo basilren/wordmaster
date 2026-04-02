@@ -142,10 +142,13 @@
   <div class="card" style="text-align:center">
     <div style="font-size:20px;font-weight:700;color:var(--pri);margin:6px 0" id="vTarget"></div>
     <div style="font-size:12px;color:var(--txt2)" id="vCn"></div>
-    <div style="margin:4px 0"><button class="speaker-btn" onclick="vSpeak()">&#x1F50A; 听一遍</button></div>
-    <div style="padding:14px 0"><button class="voice-btn" id="vBtn" onclick="toggleVoice()">&#x1F3A4;</button><div style="font-size:10px;color:var(--txt2);margin-top:4px">点击朗读</div></div>
-    <div style="font-size:14px;font-weight:600;min-height:24px" id="vResult"></div>
-    <button class="btn btn-pri btn-sm" onclick="vNext()" style="margin-top:8px;width:auto;padding:7px 24px">下一个 &#x27A1;</button>
+    <div style="margin:6px 0"><button class="speaker-btn" onclick="vSpeak()" style="font-size:24px">&#x1F50A; 先听一遍</button></div>
+    <div style="padding:14px 0">
+      <button class="voice-btn" id="vBtn" onclick="toggleVoice()">&#x1F3A4;</button>
+      <div style="font-size:10px;color:var(--txt2);margin-top:4px">点击开始朗读</div>
+    </div>
+    <div style="min-height:30px;margin-top:4px" id="vResult"></div>
+    <button class="btn btn-pri btn-sm" id="vNextBtn" onclick="vNext()" style="margin-top:8px;width:auto;padding:7px 24px;display:none">下一个 &#x27A1;</button>
   </div>
 </div>
 

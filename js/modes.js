@@ -121,26 +121,129 @@ function fPrev(){if(fIdx>0){fIdx--;renderF();}}
 function fNext(){fIdx++;if(fIdx>=fWords.length)showResult(fWords.length,fWords.length,'\u7FFB\u5361\u5B66\u4E60\u5B8C\u6210');else renderF();}
 function fMaster(){var w=fWords[fIdx],u=getUnit(curUnit),t=u.words.find(function(x){return x.en===w.en;});if(t)t.mastered=true;saveDB();fNext();}
 
-// ============ VOICE ============
-var vIdx=0,vItems=[],vOk=0,vWr=[],recognizing=false,recognition=null;
-function startVoice(){var u=getUnit(curUnit);if(!u)return;vItems=[];u.words.forEach(function(w){vItems.push({text:w.en,cn:w.cn});});(u.sentences||[]).forEach(function(s){vItems.push({text:s.en,cn:s.cn});});vItems=shuffle(vItems).slice(0,10);vIdx=0;vOk=0;vWr=[];renderV();showPage('pageVoice');}
+// ============ VOICE (with star rating + correction) ============
+var vIdx=0,vItems=[],vOk=0,vWr=[],recognizing=false,recognition=null,vStars=[];
+function startVoice(){var u=getUnit(curUnit);if(!u)return;vItems=[];u.words.forEach(function(w){vItems.push({text:w.en,cn:w.cn,type:'word'});});(u.sentences||[]).forEach(function(s){vItems.push({text:s.en,cn:s.cn,type:'sentence'});});vItems=shuffle(vItems).slice(0,10);vIdx=0;vOk=0;vWr=[];vStars=[];renderV();showPage('pageVoice');}
 function renderV(){
-  if(vIdx>=vItems.length){showResult(vOk,vItems.length,'\u8BED\u97F3\u7EC3\u4E60\u5B8C\u6210');recordSession();return;}
-  document.getElementById('vTarget').textContent=vItems[vIdx].text;document.getElementById('vCn').textContent=vItems[vIdx].cn||'';
-  document.getElementById('vResult').textContent='';document.getElementById('vBtn').classList.remove('recording');
+  if(vIdx>=vItems.length){
+    var avg=vStars.length?vStars.reduce(function(a,b){return a+b;},0)/vStars.length:0;
+    showResult(vOk,vItems.length,'\u8BED\u97F3\u7EC3\u4E60\u5B8C\u6210');recordSession();return;
+  }
+  var it=vItems[vIdx];
+  document.getElementById('vTarget').textContent=it.text;
+  document.getElementById('vCn').textContent=it.cn||'';
+  document.getElementById('vResult').innerHTML='';
+  document.getElementById('vBtn').classList.remove('recording');
+  document.getElementById('vNextBtn').style.display='none';
   dots('voiceProgress',vItems.length,vIdx,vWr);
 }
 function vSpeak(){if(vItems[vIdx])speak(vItems[vIdx].text);}
-function toggleVoice(){
-  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){document.getElementById('vResult').innerHTML='<span style="color:var(--err)">\u6B64\u6D4F\u89C8\u5668\u4E0D\u652F\u6301\u8BED\u97F3\u8BC6\u522B</span>';return;}
-  if(recognizing){if(recognition)recognition.stop();return;}
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;recognition=new SR();recognition.lang='en-US';recognition.interimResults=false;recognition.maxAlternatives=3;
-  recognition.onstart=function(){recognizing=true;document.getElementById('vBtn').classList.add('recording');document.getElementById('vResult').textContent='\u{1F3A4} \u6B63\u5728\u542C...';};
-  recognition.onresult=function(e){var rs=[];for(var i=0;i<e.results[0].length;i++)rs.push(e.results[0][i].transcript.toLowerCase().trim());var tgt=vItems[vIdx].text.toLowerCase().replace(/[^a-z0-9\s]/g,'');var ok=rs.some(function(r){return levenshtein(r.replace(/[^a-z0-9\s]/g,''),tgt)<=Math.max(2,Math.floor(tgt.length*.2));});if(ok){vOk++;document.getElementById('vResult').innerHTML='<span style="color:var(--ok)">\u2705 \u53D1\u97F3\u6B63\u786E</span>';}else{vWr.push(vIdx);document.getElementById('vResult').innerHTML='<span style="color:var(--err)">\u274C \u4F60\u8BF4\u7684\uFF1A'+esc(rs[0])+'</span>';}};
-  recognition.onerror=function(){recognizing=false;document.getElementById('vBtn').classList.remove('recording');document.getElementById('vResult').innerHTML='<span style="color:var(--warn)">\u8BC6\u522B\u5931\u8D25\uFF0C\u518D\u8BD5</span>';};
-  recognition.onend=function(){recognizing=false;document.getElementById('vBtn').classList.remove('recording');};recognition.start();
+
+function checkSpeechSupport(){
+  return ('webkitSpeechRecognition' in window)||('SpeechRecognition' in window);
 }
+
+function toggleVoice(){
+  if(!checkSpeechSupport()){
+    // Check if in WeChat
+    var isWx=/MicroMessenger/i.test(navigator.userAgent);
+    var msg=isWx?'\u{26A0}\uFE0F \u5FAE\u4FE1\u6D4F\u89C8\u5668\u4E0D\u652F\u6301\u8BED\u97F3\u8BC6\u522B<br><span style="font-size:12px;color:var(--txt2)">\u8BF7\u70B9\u53F3\u4E0A\u89D2\u201C...\u201D\u9009\u62E9\u201C\u5728\u6D4F\u89C8\u5668\u4E2D\u6253\u5F00\u201D<br>\u63A8\u8350\u4F7F\u7528 Chrome \u6216 Safari</span>':'\u{26A0}\uFE0F \u6B64\u6D4F\u89C8\u5668\u4E0D\u652F\u6301\u8BED\u97F3\u8BC6\u522B<br><span style="font-size:12px;color:var(--txt2)">\u8BF7\u4F7F\u7528 Chrome \u6216 Safari \u6253\u5F00</span>';
+    document.getElementById('vResult').innerHTML='<div style="color:var(--err);font-size:14px">'+msg+'</div>';
+    return;
+  }
+  if(recognizing){if(recognition)recognition.stop();return;}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR();
+  recognition.lang='en-US';
+  recognition.interimResults=false;
+  recognition.maxAlternatives=5;
+  recognition.onstart=function(){
+    recognizing=true;
+    document.getElementById('vBtn').classList.add('recording');
+    document.getElementById('vResult').innerHTML='<div style="font-size:28px;margin-bottom:4px">\u{1F3A4}</div><div style="color:var(--pri);font-weight:600">\u6B63\u5728\u542C\u4F60\u8BF4...</div>';
+  };
+  recognition.onresult=function(e){
+    var results=[];
+    for(var i=0;i<e.results[0].length;i++){
+      results.push({text:e.results[0][i].transcript,conf:e.results[0][i].confidence});
+    }
+    scoreVoice(results);
+  };
+  recognition.onerror=function(e){
+    recognizing=false;
+    document.getElementById('vBtn').classList.remove('recording');
+    var msg=e.error==='no-speech'?'\u6CA1\u6709\u68C0\u6D4B\u5230\u58F0\u97F3\uFF0C\u8BF7\u5927\u58F0\u8BF4':e.error==='not-allowed'?'\u8BF7\u5141\u8BB8\u9EA6\u514B\u98CE\u6743\u9650':'\u8BC6\u522B\u5931\u8D25\uFF0C\u518D\u8BD5\u4E00\u6B21';
+    document.getElementById('vResult').innerHTML='<div style="color:var(--warn);font-size:14px">'+msg+'</div>';
+  };
+  recognition.onend=function(){recognizing=false;document.getElementById('vBtn').classList.remove('recording');};
+  recognition.start();
+}
+
+function scoreVoice(results){
+  var target=vItems[vIdx].text.toLowerCase().replace(/[^a-z0-9\s']/g,'').trim();
+  var targetWords=target.split(/\s+/);
+  var bestScore=0,bestText='',bestDiff=[];
+
+  results.forEach(function(r){
+    var spoken=r.text.toLowerCase().replace(/[^a-z0-9\s']/g,'').trim();
+    var spokenWords=spoken.split(/\s+/);
+    var dist=levenshtein(spoken,target);
+    var maxLen=Math.max(spoken.length,target.length);
+    var sim=maxLen>0?1-dist/maxLen:0;
+    // Word-level comparison
+    var wordScore=0,diff=[];
+    targetWords.forEach(function(tw,i){
+      var sw=spokenWords[i]||'';
+      if(sw===tw){wordScore++;diff.push({target:tw,spoken:sw,ok:true});}
+      else{diff.push({target:tw,spoken:sw,ok:false});}
+    });
+    var wRate=targetWords.length>0?wordScore/targetWords.length:0;
+    var score=sim*0.4+wRate*0.6; // weighted
+    if(score>bestScore){bestScore=score;bestText=r.text;bestDiff=diff;}
+  });
+
+  // Calculate stars: 0-0.4 = 1star, 0.4-0.75 = 2star, 0.75+ = 3star
+  var stars=bestScore>=0.75?3:bestScore>=0.4?2:1;
+  vStars.push(stars);
+
+  if(stars>=2)vOk++;
+  else vWr.push(vIdx);
+
+  // Build result HTML
+  var starHtml='';
+  for(var i=0;i<3;i++)starHtml+='<span style="font-size:28px;'+(i<stars?'':'opacity:0.2')+'">\u2B50</span>';
+
+  var html='<div style="margin-bottom:8px">'+starHtml+'</div>';
+
+  // Score message
+  var msgs=['\u{1F4AA} \u518D\u52A0\u6CB9\uFF0C\u591A\u7EC3\u51E0\u6B21\uFF01','\u{1F44D} \u4E0D\u9519\uFF0C\u8FD8\u80FD\u66F4\u597D\uFF01','\u{1F389} \u592A\u68D2\u4E86\uFF0C\u53D1\u97F3\u5F88\u6807\u51C6\uFF01'];
+  html+='<div style="font-size:15px;font-weight:700;color:'+(stars>=3?'var(--ok)':stars>=2?'var(--pri)':'var(--err)')+'">'+msgs[stars-1]+'</div>';
+
+  // Show what you said
+  html+='<div style="margin-top:10px;font-size:13px;color:var(--txt2)">\u4F60\u8BF4\u7684\uFF1A</div>';
+  html+='<div style="font-size:15px;margin-top:2px">'+esc(bestText)+'</div>';
+
+  // Word-by-word comparison (show corrections)
+  if(stars<3&&bestDiff.length){
+    html+='<div style="margin-top:10px;padding:10px;background:#f8fafc;border-radius:8px;font-size:13px">';
+    html+='<div style="font-weight:600;margin-bottom:4px">\u{1F50D} \u9010\u8BCD\u5BF9\u6BD4\uFF1A</div>';
+    bestDiff.forEach(function(d){
+      if(d.ok){
+        html+='<span style="color:var(--ok);font-weight:600">'+esc(d.target)+' </span>';
+      } else {
+        html+='<span style="text-decoration:line-through;color:var(--err)">'+esc(d.spoken||'\u2014')+'</span>';
+        html+='<span style="color:var(--ok);font-weight:600">\u2192'+esc(d.target)+' </span>';
+      }
+    });
+    html+='</div>';
+  }
+
+  document.getElementById('vResult').innerHTML=html;
+  document.getElementById('vNextBtn').style.display='inline-block';
+}
+
 function vNext(){vIdx++;renderV();}
+
 
 // ============ ERROR BANK ============
 function renderErrBank(){
