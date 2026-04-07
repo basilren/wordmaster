@@ -10,13 +10,30 @@
 <body>
 <div class="header"><button class="back-btn" id="backBtn" onclick="goBack()" style="display:none">&#8249;</button><h1 id="headerTitle">WordMaster</h1><div class="sub" id="headerSub">英语背诵小助手</div></div>
 
-<!-- LOGIN -->
+<!-- LOGIN / REGISTER -->
 <div class="page active" id="pageLogin">
   <div style="padding:40px 0 20px;text-align:center"><div style="font-size:48px">&#x1F4DA;</div><div style="font-size:20px;font-weight:700;margin-top:8px">WordMaster</div><div style="font-size:13px;color:var(--txt2)">英语背诵小助手</div></div>
   <div class="card">
-    <div class="card-title">&#x1F464; 输入昵称开始</div>
-    <input id="loginName" placeholder="请输入你的昵称" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;outline:none;margin-bottom:10px" onkeyup="if(event.key==='Enter')doLogin()">
-    <button class="btn btn-pri" onclick="doLogin()">开始学习</button>
+    <!-- Auth tabs -->
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="authLoginTab" onclick="switchAuthTab('login')">&#x1F511; 登录</div>
+      <div class="auth-tab" id="authRegTab" onclick="switchAuthTab('register')">&#x1F4DD; 注册</div>
+    </div>
+    <!-- Login form -->
+    <div id="authLoginForm">
+      <input id="loginName" placeholder="用户名" autocomplete="username" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;outline:none;margin-bottom:8px" onkeyup="if(event.key==='Enter')document.getElementById('loginPwd').focus()">
+      <input id="loginPwd" type="password" placeholder="密码" autocomplete="current-password" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;outline:none;margin-bottom:10px" onkeyup="if(event.key==='Enter')doLogin()">
+      <button class="btn btn-pri" onclick="doLogin()">登录</button>
+    </div>
+    <!-- Register form -->
+    <div id="authRegForm" style="display:none">
+      <input id="regName" placeholder="用户名" autocomplete="username" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;outline:none;margin-bottom:8px" onkeyup="if(event.key==='Enter')document.getElementById('regPwd').focus()">
+      <input id="regPwd" type="password" placeholder="密码（至少4位）" autocomplete="new-password" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;outline:none;margin-bottom:8px" onkeyup="if(event.key==='Enter')document.getElementById('regPwd2').focus()">
+      <input id="regPwd2" type="password" placeholder="确认密码" autocomplete="new-password" style="width:100%;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;outline:none;margin-bottom:10px" onkeyup="if(event.key==='Enter')doRegister()">
+      <button class="btn btn-pri" onclick="doRegister()">注册</button>
+    </div>
+    <div id="authMsg" class="auth-msg"></div>
+    <div style="margin-top:8px;font-size:11px;color:var(--txt2);text-align:center">&#x1F4A1; 用户名不区分大小写</div>
   </div>
   <div class="card" style="margin-top:4px"><div class="card-title" style="font-size:13px">已有账号</div><div id="userListArea"><p style="color:var(--txt2);font-size:12px">还没有用户</p></div></div>
 </div>

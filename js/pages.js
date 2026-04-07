@@ -1,15 +1,68 @@
-// ============ LOGIN ============
+// ============ LOGIN / REGISTER ============
+var _authTab='login'; // 'login' or 'register'
+
+function switchAuthTab(tab){
+  _authTab=tab;
+  document.getElementById('authLoginTab').classList.toggle('active',tab==='login');
+  document.getElementById('authRegTab').classList.toggle('active',tab==='register');
+  document.getElementById('authLoginForm').style.display=tab==='login'?'block':'none';
+  document.getElementById('authRegForm').style.display=tab==='register'?'block':'none';
+  document.getElementById('authMsg').textContent='';
+}
+
 function doLogin(){
   var name=document.getElementById('loginName').value.trim();
-  if(!name){alert('\u8BF7\u8F93\u5165\u6635\u79F0');return;}
-  if(loginUser(name)){pageStack=['pageHome'];showPage('pageHome');}
+  var pwd=document.getElementById('loginPwd').value;
+  var msgEl=document.getElementById('authMsg');
+  msgEl.textContent='';msgEl.className='auth-msg';
+  if(!name){msgEl.textContent='\u8BF7\u8F93\u5165\u7528\u6237\u540D';msgEl.className='auth-msg err';return;}
+  loginUser(name,pwd).then(function(r){
+    if(r.ok){pageStack=['pageHome'];showPage('pageHome');addDemo();}
+    else{msgEl.textContent=r.msg;msgEl.className='auth-msg err';}
+  });
 }
+
+function doRegister(){
+  var name=document.getElementById('regName').value.trim();
+  var pwd=document.getElementById('regPwd').value;
+  var pwd2=document.getElementById('regPwd2').value;
+  var msgEl=document.getElementById('authMsg');
+  msgEl.textContent='';msgEl.className='auth-msg';
+  if(!name){msgEl.textContent='\u8BF7\u8F93\u5165\u7528\u6237\u540D';msgEl.className='auth-msg err';return;}
+  if(!pwd||pwd.length<4){msgEl.textContent='\u5BC6\u7801\u81F3\u5C114\u4F4D';msgEl.className='auth-msg err';return;}
+  if(pwd!==pwd2){msgEl.textContent='\u4E24\u6B21\u5BC6\u7801\u4E0D\u4E00\u81F4';msgEl.className='auth-msg err';return;}
+  registerUser(name,pwd).then(function(r){
+    if(r.ok){
+      msgEl.textContent=r.msg;msgEl.className='auth-msg ok';
+      // auto-switch to login tab
+      setTimeout(function(){
+        switchAuthTab('login');
+        document.getElementById('loginName').value=name;
+        document.getElementById('loginPwd').value='';
+        document.getElementById('loginPwd').focus();
+      },800);
+    }else{
+      msgEl.textContent=r.msg;msgEl.className='auth-msg err';
+    }
+  });
+}
+
 function showUserList(){
   var users=getAllUsers();
-  if(!users.length){document.getElementById('userListArea').innerHTML='<p style="color:var(--txt2);font-size:12px">\u8FD8\u6CA1\u6709\u7528\u6237\uFF0C\u8F93\u5165\u6635\u79F0\u521B\u5EFA</p>';return;}
-  document.getElementById('userListArea').innerHTML=users.map(function(u){
-    return '<div class="wb-item" onclick="loginUser(\''+esc(u)+'\');pageStack=[\'pageHome\'];showPage(\'pageHome\')"><div class="wb-icon" style="background:#667eea20;color:#667eea">\u{1F464}</div><div class="wb-info"><h3>'+esc(u)+'</h3></div><div class="wb-arrow">\u203A</div></div>';
+  var area=document.getElementById('userListArea');
+  if(!users.length){area.innerHTML='<p style="color:var(--txt2);font-size:12px">\u8FD8\u6CA1\u6709\u7528\u6237</p>';return;}
+  area.innerHTML=users.map(function(u){
+    var dn=u.displayName||u.key;
+    var hasPwd=!!u.pwHash;
+    return '<div class="wb-item" onclick="prefillLogin(\''+esc(dn)+'\')"><div class="wb-icon" style="background:#667eea20;color:#667eea">\u{1F464}</div><div class="wb-info"><h3>'+esc(dn)+'</h3>'+(hasPwd?'<p>\u{1F512} \u5DF2\u8BBE\u5BC6\u7801</p>':'<p>\u65E0\u5BC6\u7801</p>')+'</div><div class="wb-arrow">\u203A</div></div>';
   }).join('');
+}
+
+function prefillLogin(name){
+  switchAuthTab('login');
+  document.getElementById('loginName').value=name;
+  document.getElementById('loginPwd').value='';
+  document.getElementById('loginPwd').focus();
 }
 
 // ============ HOME ============
@@ -233,38 +286,58 @@ function launchTest(type){
   else startSentTest();
 }
 
-// ============ DEMO ============
+// ============ PRESET WORDBANKS ============
+var PRESETS=[
+{id:'u_5bu4',name:'5BU4 - Book Week',words:[
+  {en:'storybook',cn:'\u6545\u4E8B\u4E66'},{en:'buy',cn:'\u4E70'},{en:'story',cn:'\u6545\u4E8B'},{en:'dictionary',cn:'\u5B57\u5178\uFF1B\u8BCD\u5178'},
+  {en:'magazine',cn:'\u6742\u5FD7'},{en:'newspaper',cn:'\u62A5\u7EB8'},{en:'week',cn:'\u5468\uFF1B\u661F\u671F'},{en:'student',cn:'\u5B66\u751F'},
+  {en:'poster',cn:'\u6D77\u62A5'},{en:'best',cn:'\u6700\u597D\u7684'},{en:'writer',cn:'\u4F5C\u5BB6'},{en:'over there',cn:'\u5728\u90A3\u8FB9'},
+  {en:'do a survey',cn:'\u505A\u8C03\u67E5'},{en:'act...out',cn:'\u8868\u6F14'},{en:'bookshop',cn:'\u4E66\u5E97'},{en:'make posters',cn:'\u505A\u6D77\u62A5'},
+  {en:'play',cn:'\u5267\u672C\uFF0C\u620F\u5267'},{en:'line',cn:'\u7EBF\uFF0C\u884C\uFF0C\u5217'}
+],sentences:[
+  {en:'I\'m going to look at the picture books over there.',cn:'\u6211\u6253\u7B97\u770B\u4E00\u4E0B\u90A3\u8FB9\u7684\u56FE\u753B\u4E66\uFF08\u7ED8\u672C\uFF09\u3002'},
+  {en:'What are the pictures about?',cn:'\u56FE\u7247\u662F\u5173\u4E8E\u4EC0\u4E48\u7684\uFF1F'},
+  {en:'They\'re pictures of different places in China.',cn:'\u4ED6\u4EEC\u662F\u4E2D\u56FD\u4E0D\u540C\u5730\u65B9\u7684\u56FE\u7247\u3002'},
+  {en:'I\'m going to visit these places in the future.',cn:'\u6211\u5C06\u6765\u8981\u53BB\u53C2\u89C2\u8FD9\u4E9B\u5730\u65B9\u3002'},
+  {en:'I\'m going to read a story every day.',cn:'\u6211\u8981\u6BCF\u5929\u8BFB\u4E00\u4E2A\u6545\u4E8B\u3002'},
+  {en:'Book Week is coming!',cn:'\u56FE\u4E66\u5468\u5C06\u8981\u5230\u4E86\uFF01'},
+  {en:'The students in Class 5A are going to make posters about the best stories for children.',cn:'5A\u73ED\u7684\u5B66\u751F\u6253\u7B97\u5236\u4F5C\u5173\u4E8E\u6700\u9002\u5408\u5B69\u5B50\u4EEC\u7684\u6545\u4E8B\u7684\u6D77\u62A5\u3002'},
+  {en:'They are going to take some photos of the books too.',cn:'\u4ED6\u4EEC\u4E5F\u8981\u62CD\u4E00\u4E0B\u4E66\u7C4D\u7684\u7167\u7247\u3002'},
+  {en:'The boys are going to do a survey about children\'s favourite books.',cn:'\u7537\u751F\u5C06\u8981\u505A\u5173\u4E8E\u5B69\u5B50\u4EEC\u559C\u7231\u4E66\u7C4D\u7684\u8C03\u67E5\u3002'},
+  {en:'The girls are going to read a play and then act it out.',cn:'\u5973\u751F\u5C06\u8981\u8BFB\u4E00\u4E2A\u5267\u672C\u5E76\u8868\u6F14\u51FA\u6765\u3002'}
+]},
+{id:'u_5bu5',name:'5BU5 - At the Weekend',words:[
+  {en:'weekend',cn:'\u5468\u672B'},{en:'stay',cn:'\u5F85\uFF1B\u6682\u4F4F\uFF1B\u901E\u7559'},
+  {en:'film',cn:'\u7535\u5F71'},{en:'boat',cn:'\u5C0F\u8239\uFF1B\u821F'},
+  {en:'plan',cn:'\u5B89\u6392\uFF1B\u8BA1\u5212'},{en:'tomorrow',cn:'\u660E\u5929'},
+  {en:'build',cn:'\u5EFA\u7B51\uFF1B\u5EFA\u9020'},{en:'next',cn:'\u7D27\u63A5\u7740\uFF1B\u968F\u540E\uFF1B\u7D27\u63A5\u7740\u7684'},
+  {en:'swing',cn:'\u79CB\u5343'},{en:'cry',cn:'\u54ED\uFF1B\u558A\u53EB'},
+  {en:'until',cn:'\u76F4\u5230'},{en:'see a film',cn:'\u770B\u7535\u5F71'},
+  {en:'row a boat',cn:'\u5212\u8239'},{en:'at the weekend',cn:'\u5728\u5468\u672B'},
+  {en:'stay at home',cn:'\u5F85\u5728\u5BB6\u91CC'},{en:'goat',cn:'\u5C71\u7F8A'}
+],sentences:[
+  {en:'Children, what are you going to do this weekend?',cn:'\u5B69\u5B50\u4EEC\uFF0C\u4F60\u4EEC\u8FD9\u5468\u672B\u6253\u7B97\u505A\u4EC0\u4E48\uFF1F'},
+  {en:'I\'m going to stay at home and watch TV with my grandparents.',cn:'\u6211\u6253\u7B97\u5F85\u5728\u5BB6\u91CC\u548C\u6211\u7684\u7237\u7237\u5976\u5976/\u5916\u516C\u5916\u5A46\u770B\u7535\u89C6\u3002'},
+  {en:'I\'m going to see a film with my parents on Saturday afternoon.',cn:'\u6211\u6253\u7B97\u5468\u516D\u4E0B\u5348\u548C\u7236\u6BCD\u53BB\u770B\u7535\u5F71\u3002'},
+  {en:'I\'m going to row a boat and fly a kite in the park on Sunday.',cn:'\u6211\u6253\u7B97\u5468\u65E5\u53BB\u516C\u56ED\u5212\u8239\u548C\u653E\u98CE\u7B5D\u3002'},
+  {en:'I don\'t have any plans for the weekend.',cn:'\u6211\u6CA1\u6709\u5468\u672B\u8BA1\u5212\u3002'},
+  {en:'Do you want to come with me, Alice?',cn:'\u4F60\u8981\u548C\u6211\u4E00\u8D77\u5417\uFF0C\u7231\u4E3D\u4E1D\uFF1F'},
+  {en:'Sure. Thank you, Kitty.',cn:'\u597D\u5440\uFF0C\u8C22\u8C22\u4F60\uFF0C\u57FA\u8482\u3002'},
+  {en:'I\'m going to build my house tomorrow.',cn:'\u6211\u660E\u5929\u518D\u5EFA\u623F\u5B50\u3002'},
+  {en:'You should build your house now.',cn:'\u4F60\u5E94\u8BE5\u73B0\u5728\u5C31\u5EFA\u623F\u5B50\u3002'},
+  {en:'Don\'t wait until tomorrow.',cn:'\u4ECA\u65E5\u4E8B\uFF0C\u4ECA\u65E5\u6BD5\u3002'}
+]}
+];
+
 function addDemo(){
-  if(db.units.length)return;
-  db.units.push({id:'u_5bu4',name:'5BU4 - Book Week',created:todayStr(),words:[
-    {en:'storybook',cn:'\u6545\u4E8B\u4E66',mastered:false,errCnt:0},
-    {en:'buy',cn:'\u4E70',mastered:false,errCnt:0},
-    {en:'story',cn:'\u6545\u4E8B',mastered:false,errCnt:0},
-    {en:'dictionary',cn:'\u5B57\u5178\uFF1B\u8BCD\u5178',mastered:false,errCnt:0},
-    {en:'magazine',cn:'\u6742\u5FD7',mastered:false,errCnt:0},
-    {en:'newspaper',cn:'\u62A5\u7EB8',mastered:false,errCnt:0},
-    {en:'week',cn:'\u5468\uFF1B\u661F\u671F',mastered:false,errCnt:0},
-    {en:'student',cn:'\u5B66\u751F',mastered:false,errCnt:0},
-    {en:'poster',cn:'\u6D77\u62A5',mastered:false,errCnt:0},
-    {en:'best',cn:'\u6700\u597D\u7684',mastered:false,errCnt:0},
-    {en:'writer',cn:'\u4F5C\u5BB6',mastered:false,errCnt:0},
-    {en:'over there',cn:'\u5728\u90A3\u8FB9',mastered:false,errCnt:0},
-    {en:'do a survey',cn:'\u505A\u8C03\u67E5',mastered:false,errCnt:0},
-    {en:'act...out',cn:'\u8868\u6F14',mastered:false,errCnt:0},
-    {en:'bookshop',cn:'\u4E66\u5E97',mastered:false,errCnt:0},
-    {en:'make posters',cn:'\u505A\u6D77\u62A5',mastered:false,errCnt:0},
-    {en:'play',cn:'\u5267\u672C\uFF0C\u620F\u5267',mastered:false,errCnt:0},
-    {en:'line',cn:'\u7EBF\uFF0C\u884C\uFF0C\u5217',mastered:false,errCnt:0}
-  ],sentences:[
-    {en:'I\'m going to look at the picture books over there.',cn:'\u6211\u6253\u7B97\u770B\u4E00\u4E0B\u90A3\u8FB9\u7684\u56FE\u753B\u4E66\uFF08\u7ED8\u672C\uFF09\u3002'},
-    {en:'What are the pictures about?',cn:'\u56FE\u7247\u662F\u5173\u4E8E\u4EC0\u4E48\u7684\uFF1F'},
-    {en:'They\'re pictures of different places in China.',cn:'\u4ED6\u4EEC\u662F\u4E2D\u56FD\u4E0D\u540C\u5730\u65B9\u7684\u56FE\u7247\u3002'},
-    {en:'I\'m going to visit these places in the future.',cn:'\u6211\u5C06\u6765\u8981\u53BB\u53C2\u89C2\u8FD9\u4E9B\u5730\u65B9\u3002'},
-    {en:'I\'m going to read a story every day.',cn:'\u6211\u8981\u6BCF\u5929\u8BFB\u4E00\u4E2A\u6545\u4E8B\u3002'},
-    {en:'Book Week is coming!',cn:'\u56FE\u4E66\u5468\u5C06\u8981\u5230\u4E86\uFF01'},
-    {en:'The students in Class 5A are going to make posters about the best stories for children.',cn:'5A\u73ED\u7684\u5B66\u751F\u6253\u7B97\u5236\u4F5C\u5173\u4E8E\u6700\u9002\u5408\u5B69\u5B50\u4EEC\u7684\u6545\u4E8B\u7684\u6D77\u62A5\u3002'},
-    {en:'They are going to take some photos of the books too.',cn:'\u4ED6\u4EEC\u4E5F\u8981\u62CD\u4E00\u4E0B\u4E66\u7C4D\u7684\u7167\u7247\u3002'},
-    {en:'The boys are going to do a survey about children\'s favourite books.',cn:'\u7537\u751F\u5C06\u8981\u505A\u5173\u4E8E\u5B69\u5B50\u4EEC\u559C\u7231\u4E66\u7C4D\u7684\u8C03\u67E5\u3002'},
-    {en:'The girls are going to read a play and then act it out.',cn:'\u5973\u751F\u5C06\u8981\u8BFB\u4E00\u4E2A\u5267\u672C\u5E76\u8868\u6F14\u51FA\u6765\u3002'}
-  ]});saveDB();
+  var changed=false;
+  PRESETS.forEach(function(p){
+    if(!db.units.some(function(u){return u.id===p.id;})){
+      db.units.push({id:p.id,name:p.name,created:todayStr(),
+        words:p.words.map(function(w){return{en:w.en,cn:w.cn,mastered:false,errCnt:0};}),
+        sentences:p.sentences.slice()});
+      changed=true;
+    }
+  });
+  if(changed)saveDB();
 }

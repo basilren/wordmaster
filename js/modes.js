@@ -353,8 +353,7 @@ function renderCalendar(){
 
 // ============ INIT ============
 function initApp(){
-  var last=localStorage.getItem('wm_last_user');
-  if(last){loginUser(last);addDemo();pageStack=['pageHome'];showPage('pageHome',false);}
+  if(autoLogin()){addDemo();pageStack=['pageHome'];showPage('pageHome',false);}
   else{showUserList();showPage('pageLogin',false);}
 }
 initApp();

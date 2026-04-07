@@ -84,3 +84,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .tab-item{padding:7px 12px;border-radius:18px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;background:#f1f5f9;color:var(--txt2);transition:.15s;border:none}
 .tab-item.active{background:var(--pri);color:#fff}
 @media(min-width:500px){.page{max-width:420px;margin:0 auto}}
+/* auth tabs */
+.auth-tabs{display:flex;gap:0;margin-bottom:14px;border-radius:10px;overflow:hidden;border:1.5px solid #e2e8f0}
+.auth-tab{flex:1;text-align:center;padding:10px 0;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;color:var(--txt2);background:#f8fafc}
+.auth-tab.active{background:var(--pri);color:#fff}
+.auth-msg{min-height:18px;font-size:13px;text-align:center;margin-top:10px;transition:.2s;line-height:1.4}
+.auth-msg.err{color:var(--err)}.auth-msg.ok{color:var(--ok)}

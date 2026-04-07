@@ -1,23 +1,95 @@
-// ============ MULTI-USER ============
-var CUR_USER=null;
-function getAllUsers(){try{return JSON.parse(localStorage.getItem('wm_users'))||[];}catch(e){return[];}}
+// ============ MULTI-USER (with register/login, case-insensitive username) ============
+var CUR_USER=null; // stores the display name
+var CUR_USER_KEY=null; // lowercase key for storage
+
+// --- password hashing (SHA-256 via Web Crypto) ---
+function hashPwd(pwd){
+  var enc=new TextEncoder();
+  return crypto.subtle.digest('SHA-256',enc.encode(pwd)).then(function(buf){
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+  });
+}
+
+// --- user registry: [{key,displayName,pwHash}] ---
+function getAllUsers(){
+  try{
+    var raw=JSON.parse(localStorage.getItem('wm_users'))||[];
+    // migrate legacy string[] format
+    if(raw.length&&typeof raw[0]==='string'){
+      raw=raw.map(function(n){return{key:n.trim().toLowerCase(),displayName:n.trim(),pwHash:''};});
+      saveAllUsers(raw);
+    }
+    return raw;
+  }catch(e){return[];}
+}
 function saveAllUsers(u){localStorage.setItem('wm_users',JSON.stringify(u));}
-function getUserDB(name){try{return JSON.parse(localStorage.getItem('wm_u_'+name))||newDB();}catch(e){return newDB();}}
-function saveUserDB(name,d){localStorage.setItem('wm_u_'+name,JSON.stringify(d));}
+function findUser(name){var k=name.trim().toLowerCase();return getAllUsers().find(function(u){return u.key===k;});}
+
+function getUserDB(key){try{return JSON.parse(localStorage.getItem('wm_u_'+key))||newDB();}catch(e){return newDB();}}
+function saveUserDB(key,d){localStorage.setItem('wm_u_'+key,JSON.stringify(d));}
 function newDB(){return{units:[],errBank:[],stats:{sessions:0,streak:0,lastDate:'',calendar:{}}};}
 var db=newDB();
 
-function loginUser(name){
-  name=name.trim();if(!name)return false;
-  CUR_USER=name;
-  var users=getAllUsers();
-  if(users.indexOf(name)<0){users.push(name);saveAllUsers(users);}
-  db=getUserDB(name);
-  localStorage.setItem('wm_last_user',name);
+// --- register (async, returns Promise<{ok,msg}>) ---
+function registerUser(name,pwd){
+  name=name.trim();
+  if(!name)return Promise.resolve({ok:false,msg:'\u8BF7\u8F93\u5165\u7528\u6237\u540D'});
+  if(name.length>20)return Promise.resolve({ok:false,msg:'\u7528\u6237\u540D\u4E0D\u80FD\u8D85\u8FC720\u4E2A\u5B57\u7B26'});
+  if(!pwd||pwd.length<4)return Promise.resolve({ok:false,msg:'\u5BC6\u7801\u81F3\u5C114\u4F4D'});
+  var key=name.toLowerCase();
+  if(findUser(name))return Promise.resolve({ok:false,msg:'\u8BE5\u7528\u6237\u540D\u5DF2\u88AB\u6CE8\u518C'});
+  return hashPwd(pwd).then(function(h){
+    var users=getAllUsers();
+    users.push({key:key,displayName:name,pwHash:h});
+    saveAllUsers(users);
+    // migrate legacy data if exists under displayName
+    var legacyData=null;
+    try{legacyData=JSON.parse(localStorage.getItem('wm_u_'+name));}catch(e){}
+    if(legacyData&&!localStorage.getItem('wm_u_'+key)){
+      localStorage.setItem('wm_u_'+key,JSON.stringify(legacyData));
+    }
+    return {ok:true,msg:'\u6CE8\u518C\u6210\u529F\uFF01\u8BF7\u767B\u5F55'};
+  });
+}
+
+// --- login (async, returns Promise<{ok,msg}>) ---
+function loginUser(name,pwd){
+  name=(name||'').trim();
+  if(!name)return Promise.resolve({ok:false,msg:'\u8BF7\u8F93\u5165\u7528\u6237\u540D'});
+  var user=findUser(name);
+  if(!user)return Promise.resolve({ok:false,msg:'\u7528\u6237\u4E0D\u5B58\u5728\uFF0C\u8BF7\u5148\u6CE8\u518C'});
+  // legacy user without password — allow direct login
+  if(!user.pwHash){
+    CUR_USER=user.displayName;CUR_USER_KEY=user.key;
+    db=getUserDB(user.key);
+    localStorage.setItem('wm_last_user',user.key);
+    return Promise.resolve({ok:true,msg:''});
+  }
+  if(!pwd)return Promise.resolve({ok:false,msg:'\u8BF7\u8F93\u5165\u5BC6\u7801'});
+  return hashPwd(pwd).then(function(h){
+    if(h!==user.pwHash)return {ok:false,msg:'\u5BC6\u7801\u9519\u8BEF'};
+    CUR_USER=user.displayName;CUR_USER_KEY=user.key;
+    db=getUserDB(user.key);
+    localStorage.setItem('wm_last_user',user.key);
+    return {ok:true,msg:''};
+  });
+}
+
+// --- auto-login from last session ---
+function autoLogin(){
+  var lastKey=localStorage.getItem('wm_last_user');
+  if(!lastKey)return false;
+  var user=getAllUsers().find(function(u){return u.key===lastKey||u.displayName===lastKey;});
+  if(!user)return false;
+  // only auto-login legacy (no password) users
+  if(user.pwHash)return false;
+  CUR_USER=user.displayName;CUR_USER_KEY=user.key;
+  db=getUserDB(user.key);
   return true;
 }
-function saveDB(){if(CUR_USER)saveUserDB(CUR_USER,db);}
-function logoutUser(){CUR_USER=null;db=newDB();localStorage.removeItem('wm_last_user');showPage('pageLogin',false);pageStack=['pageLogin'];}
+
+function saveDB(){if(CUR_USER_KEY)saveUserDB(CUR_USER_KEY,db);}
+function logoutUser(){CUR_USER=null;CUR_USER_KEY=null;db=newDB();localStorage.removeItem('wm_last_user');showPage('pageLogin',false);pageStack=['pageLogin'];}
 
 // ============ NAV ============
 var pageStack=['pageLogin'];
@@ -40,6 +112,7 @@ function showPage(id,push){
   if(id==='pageWordbank')renderWordbank();
   if(id==='pageErr')renderErrBank();
   if(id==='pageStats')renderStats();
+  if(id==='pageLogin')showUserList();
 }
 function goBack(){pageStack.pop();showPage(pageStack.length?pageStack[pageStack.length-1]:'pageHome',false);}
 function navTo(id){pageStack=[id];showPage(id);}
