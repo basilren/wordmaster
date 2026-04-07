@@ -112,15 +112,15 @@
 <!-- SENTENCE FLASHCARD -->
 <div class="page" id="pageSentFlash">
   <div class="quiz-progress" id="sentFlashProgress"></div>
-  <div style="perspective:1000px;width:100%;height:210px;cursor:pointer;margin-bottom:12px" id="sfCard" onclick="flipSentCard()">
-    <div style="position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d" class="sf-inner">
-      <div style="position:absolute;width:100%;height:100%;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:16px;background:linear-gradient(135deg,#22c55e,#059669);color:#fff">
+  <div style="perspective:1000px;width:100%;min-height:200px;cursor:pointer;margin-bottom:12px" id="sfCard" onclick="flipSentCard()">
+    <div style="position:relative;width:100%;min-height:200px;transition:transform .5s;transform-style:preserve-3d" class="sf-inner">
+      <div style="width:100%;min-height:200px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:20px 16px;background:linear-gradient(135deg,#22c55e,#059669);color:#fff">
         <button class="speaker-btn" onclick="event.stopPropagation();sfSpeak()" style="color:#fff;font-size:24px;position:absolute;top:10px;right:10px">&#x1F50A;</button>
-        <div style="font-size:18px;font-weight:600;line-height:1.4;text-align:center" id="sfEn"></div>
+        <div style="font-size:16px;font-weight:600;line-height:1.5;text-align:center;word-break:break-word;padding:0 8px" id="sfEn"></div>
         <div style="font-size:11px;opacity:.7;margin-top:6px">点击翻转看中文</div>
       </div>
-      <div style="position:absolute;width:100%;height:100%;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:16px;background:#fff;transform:rotateY(180deg)">
-        <div style="font-size:18px;font-weight:600;color:var(--pri);text-align:center;line-height:1.4" id="sfCn"></div>
+      <div style="position:absolute;top:0;left:0;width:100%;min-height:200px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:20px 16px;background:#fff;transform:rotateY(180deg)">
+        <div style="font-size:16px;font-weight:600;color:var(--pri);text-align:center;line-height:1.5;word-break:break-word;padding:0 8px" id="sfCn"></div>
       </div>
     </div>
   </div>
@@ -189,16 +189,16 @@
 <!-- FLASHCARD -->
 <div class="page" id="pageFlash">
   <div class="quiz-progress" id="flashProgress"></div>
-  <div style="perspective:1000px;width:100%;height:210px;cursor:pointer;margin-bottom:12px" id="fCard" onclick="flipCard()">
-    <div style="position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d" class="f-inner">
-      <div style="position:absolute;width:100%;height:100%;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">
+  <div style="perspective:1000px;width:100%;min-height:200px;cursor:pointer;margin-bottom:12px" id="fCard" onclick="flipCard()">
+    <div style="position:relative;width:100%;min-height:200px;transition:transform .5s;transform-style:preserve-3d" class="f-inner">
+      <div style="width:100%;min-height:200px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:20px 16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff">
         <button class="speaker-btn" onclick="event.stopPropagation();fSpeak()" style="color:#fff;font-size:24px;position:absolute;top:10px;right:10px">&#x1F50A;</button>
-        <div style="font-size:30px;font-weight:700" id="fWord"></div>
-        <div style="font-size:11px;opacity:.7;margin-top:4px">点击翻转看释义</div>
+        <div style="font-size:28px;font-weight:700;word-break:break-word;text-align:center;line-height:1.3" id="fWord"></div>
+        <div style="font-size:11px;opacity:.7;margin-top:6px">点击翻转看释义</div>
       </div>
-      <div style="position:absolute;width:100%;height:100%;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:16px;background:#fff;transform:rotateY(180deg)">
-        <div style="font-size:24px;font-weight:600;color:var(--pri)" id="fCn"></div>
-        <div style="font-size:12px;color:var(--txt2);margin-top:8px;text-align:center" id="fSent"></div>
+      <div style="position:absolute;top:0;left:0;width:100%;min-height:200px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:var(--sh);padding:20px 16px;background:#fff;transform:rotateY(180deg)">
+        <div style="font-size:22px;font-weight:600;color:var(--pri);word-break:break-word;text-align:center;line-height:1.3" id="fCn"></div>
+        <div style="font-size:12px;color:var(--txt2);margin-top:8px;text-align:center;line-height:1.4;word-break:break-word" id="fSent"></div>
       </div>
     </div>
   </div>

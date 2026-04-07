@@ -28,7 +28,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .wb-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border-radius:var(--r);margin-bottom:8px;box-shadow:var(--sh);cursor:pointer;transition:.15s}
 .wb-item:active{background:#f8fafc}
 .wb-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.wb-info{flex:1;min-width:0}.wb-info h3{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wb-info{flex:1;min-width:0}.wb-info h3{font-size:14px;font-weight:600;word-break:break-word}
 .wb-info p{font-size:11px;color:var(--txt2);margin-top:2px}.wb-arrow{color:#c0c6d4;font-size:16px}
 .wb-check{width:22px;height:22px;border:2px solid #cbd5e1;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;font-size:14px;color:#fff}
 .wb-check.checked{background:var(--pri);border-color:var(--pri)}
@@ -49,14 +49,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .quiz-progress{display:flex;gap:3px;margin-bottom:12px}
 .quiz-dot{width:100%;height:4px;border-radius:2px;background:#e2e8f0;transition:.2s}
 .quiz-dot.done{background:var(--ok)}.quiz-dot.wrong-dot{background:var(--err)}.quiz-dot.cur{background:var(--pri)}
-.q-stem{font-size:17px;font-weight:600;text-align:center;margin:16px 0 20px;min-height:50px;display:flex;align-items:center;justify-content:center;line-height:1.4}
+.q-stem{font-size:17px;font-weight:600;text-align:center;margin:16px 0 20px;min-height:40px;display:flex;align-items:center;justify-content:center;line-height:1.5;word-break:break-word;padding:0 4px}
 .q-opts{display:flex;flex-direction:column;gap:8px}
-.q-opt{padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:14px;cursor:pointer;transition:.15s;background:#fff;text-align:left}
+.q-opt{padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:14px;cursor:pointer;transition:.15s;background:#fff;text-align:left;word-break:break-word;line-height:1.4}
 .q-opt:active{background:#f8fafc}.q-opt.correct{border-color:var(--ok);background:#f0fdf4;color:#166534;font-weight:600}
 .q-opt.wrong{border-color:var(--err);background:#fef2f2;color:#991b1b;font-weight:600}
 .q-opt.disabled{pointer-events:none;opacity:.55}
 .spell-wrap{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin:16px 0}
-.spell-char{width:34px;height:42px;border:2px solid #e2e8f0;border-radius:8px;font-size:20px;font-weight:700;text-align:center;outline:none;transition:.15s;text-transform:lowercase;-webkit-appearance:none;caret-color:var(--pri)}
+.spell-char{width:30px;height:38px;border:2px solid #e2e8f0;border-radius:7px;font-size:18px;font-weight:700;text-align:center;outline:none;transition:.15s;text-transform:lowercase;-webkit-appearance:none;caret-color:var(--pri)}
 .spell-char:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(102,126,234,.15)}
 .spell-char.correct{border-color:var(--ok);background:#f0fdf4;color:#166534}
 .spell-char.wrong{border-color:var(--err);background:#fef2f2;color:#991b1b}
@@ -67,8 +67,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans G
 .speaker-btn:active{transform:scale(.9)}
 .answer-box{margin-top:10px;padding:10px 12px;background:#fffbeb;border-left:3px solid var(--warn);border-radius:0 8px 8px 0;font-size:13px;line-height:1.5;color:#92400e;display:none}
 .answer-box.show{display:block}
-.sent-fill{font-size:16px;line-height:2.2;text-align:center;margin:16px 0;word-spacing:3px}
-.sent-fill .blank-input{display:inline-block;border:none;border-bottom:2px solid var(--pri);outline:none;font-size:16px;font-weight:600;text-align:center;color:var(--pri);background:transparent;min-width:60px;padding:0 2px}
+.sent-fill{font-size:15px;line-height:2.4;text-align:center;margin:12px 0;word-spacing:2px;word-break:break-word}
+.sent-fill .blank-input{display:inline-block;border:none;border-bottom:2px solid var(--pri);outline:none;font-size:15px;font-weight:600;text-align:center;color:var(--pri);background:transparent;min-width:50px;padding:0 2px}
 .result-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200;padding:16px}
 .result-box{background:#fff;border-radius:20px;padding:28px 20px;text-align:center;max-width:300px;width:100%}
 .result-emoji{font-size:56px;margin-bottom:10px}.result-title{font-size:20px;font-weight:700;margin-bottom:6px}
