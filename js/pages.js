@@ -195,16 +195,16 @@ function showEdit(words,sents){
 }
 function editUnit(id){_editId=id;var u=getUnit(id);if(!u)return;document.getElementById('unitName').value=u.name;renderEditW(u.words.map(function(w){return{en:w.en,cn:w.cn};}));renderEditS((u.sentences||[]).map(function(s){return{en:s.en,cn:s.cn};}));showPage('pageEdit');}
 function renderEditW(ws){document.getElementById('editWordList').innerHTML=ws.map(function(w){return '<div class="word-edit-item"><input placeholder="\u82F1\u6587" value="'+esc(w.en)+'"><input placeholder="\u4E2D\u6587" value="'+esc(w.cn)+'"><button class="del-btn" onclick="this.parentElement.remove()">\u00D7</button></div>';}).join('');}
-function renderEditS(ss){document.getElementById('editSentList').innerHTML=ss.map(function(s){return '<div class="word-edit-item"><input placeholder="\u82F1\u6587\u53E5\u5B50" value="'+esc(s.en)+'" style="font-size:12px"><input placeholder="\u4E2D\u6587" value="'+esc(s.cn)+'" style="font-size:12px"><button class="del-btn" onclick="this.parentElement.remove()">\u00D7</button></div>';}).join('');}
+function renderEditS(ss){document.getElementById('editSentList').innerHTML=ss.map(function(s){return '<div class="sent-edit-item"><textarea rows="2" placeholder="\u82F1\u6587\u53E5\u5B50" class="sent-en">'+esc(s.en)+'</textarea><textarea rows="2" placeholder="\u4E2D\u6587\u7FFB\u8BD1" class="sent-cn" style="margin-top:4px">'+esc(s.cn)+'</textarea><button class="del-btn" onclick="this.parentElement.remove()">\u00D7</button></div>';}).join('');}
 function addEditWord(){var d=document.createElement('div');d.className='word-edit-item';d.innerHTML='<input placeholder="\u82F1\u6587"><input placeholder="\u4E2D\u6587"><button class="del-btn" onclick="this.parentElement.remove()">\u00D7</button>';document.getElementById('editWordList').appendChild(d);d.querySelector('input').focus();}
-function addEditSent(){var d=document.createElement('div');d.className='word-edit-item';d.innerHTML='<input placeholder="\u82F1\u6587\u53E5\u5B50" style="font-size:12px"><input placeholder="\u4E2D\u6587" style="font-size:12px"><button class="del-btn" onclick="this.parentElement.remove()">\u00D7</button>';document.getElementById('editSentList').appendChild(d);d.querySelector('input').focus();}
+function addEditSent(){var d=document.createElement('div');d.className='sent-edit-item';d.innerHTML='<textarea rows="2" placeholder="\u82F1\u6587\u53E5\u5B50" class="sent-en"></textarea><textarea rows="2" placeholder="\u4E2D\u6587\u7FFB\u8BD1" class="sent-cn" style="margin-top:4px"></textarea><button class="del-btn" onclick="this.parentElement.remove()">\u00D7</button>';document.getElementById('editSentList').appendChild(d);d.querySelector('textarea').focus();}
 function saveUnit(){
   var name=document.getElementById('unitName').value.trim();if(!name){alert('\u8BF7\u8F93\u5165\u540D\u79F0');return;}
   var words=[],wI=document.getElementById('editWordList').querySelectorAll('.word-edit-item');
   wI.forEach(function(item){var ip=item.querySelectorAll('input'),en=(ip[0].value||'').trim(),cn=(ip[1].value||'').trim();if(en)words.push({en:en,cn:cn});});
   if(!words.length){alert('\u8BF7\u6DFB\u52A0\u5355\u8BCD');return;}
-  var sents=[],sI=document.getElementById('editSentList').querySelectorAll('.word-edit-item');
-  sI.forEach(function(item){var ip=item.querySelectorAll('input'),en=(ip[0].value||'').trim(),cn=(ip[1].value||'').trim();if(en)sents.push({en:en,cn:cn});});
+  var sents=[],sI=document.getElementById('editSentList').querySelectorAll('.sent-edit-item');
+  sI.forEach(function(item){var ta=item.querySelectorAll('textarea'),en=(ta[0].value||'').trim(),cn=(ta[1].value||'').trim();if(en)sents.push({en:en,cn:cn});});
   if(_editId){var u=getUnit(_editId);if(u){var om={};u.words.forEach(function(w){om[w.en.toLowerCase()]=w;});u.name=name;u.words=words.map(function(w){var o=om[w.en.toLowerCase()];return{en:w.en,cn:w.cn,mastered:o?o.mastered:false,errCnt:o?o.errCnt:0};});u.sentences=sents;}}
   else db.units.push({id:'u_'+Date.now(),name:name,created:todayStr(),words:words.map(function(w){return{en:w.en,cn:w.cn,mastered:false,errCnt:0};}),sentences:sents});
   saveDB();navTo('pageWordbank');
