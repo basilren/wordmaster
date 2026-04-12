@@ -70,12 +70,46 @@ function startSentFill(){
   sfSents=shuffle(u.sentences.slice());sfIdx=0;sfOk=0;sfWr=[];
   showPage('pageSentFill');renderSF2();
 }
+function pickBlanks(ws){
+  // Skip trivial words for blanking; prefer harder/longer words and allow consecutive runs
+  var skip={'a':1,'an':1,'the':1,'is':1,'am':1,'are':1,'was':1,'were':1,'i':1,'it':1,'in':1,'on':1,'at':1,'to':1,'of':1,'and':1,'or':1,'but':1,'so':1,'if':1,'my':1,'he':1,'she':1,'we':1,'by':1,'up':1,'no':1,'do':1,'be':1};
+  var len=ws.length;
+  if(len<=2) return [0];
+  // Score each word: longer + non-trivial = higher
+  var scores=ws.map(function(w,i){
+    var clean=w.replace(/[.,!?;:'"()]/g,'').toLowerCase();
+    if(skip[clean]) return 0.1+Math.random()*0.2;
+    return clean.length*0.5+Math.random()*2;
+  });
+  // Decide how many blanks: 30-50% of words, min 2, max 6
+  var target=Math.max(2,Math.min(6,Math.round(len*0.4)));
+  // Strategy: pick top-scored indices, then try to form consecutive runs
+  var ranked=scores.map(function(s,i){return {i:i,s:s};}).sort(function(a,b){return b.s-a.s;});
+  var picked={};
+  for(var k=0;k<ranked.length&&Object.keys(picked).length<target;k++){
+    picked[ranked[k].i]=true;
+  }
+  // Expand: if two blanks are 1 apart, fill the gap to make consecutive run (50% chance)
+  var idxs=Object.keys(picked).map(Number).sort(function(a,b){return a-b;});
+  for(var k=0;k<idxs.length-1;k++){
+    if(idxs[k+1]-idxs[k]===2 && Math.random()<0.5 && Object.keys(picked).length<Math.min(7,len-1)){
+      picked[idxs[k]+1]=true;
+    }
+  }
+  // Also: with 40% chance, extend a blank by +1 to create a 2-word consecutive run
+  idxs=Object.keys(picked).map(Number).sort(function(a,b){return a-b;});
+  for(var k=0;k<idxs.length;k++){
+    var nxt=idxs[k]+1;
+    if(nxt<len && !picked[nxt] && Math.random()<0.4 && Object.keys(picked).length<Math.min(7,len-1)){
+      picked[nxt]=true;
+    }
+  }
+  return Object.keys(picked).map(Number).sort(function(a,b){return a-b;});
+}
 function renderSF2(){
   if(sfIdx>=sfSents.length){showResult(sfOk,sfSents.length,'\u53E5\u5B50\u586B\u7A7A\u5B8C\u6210');recordSession();return;}
   dots('sfProgress',sfSents.length,sfIdx,sfWr);
-  var s=sfSents[sfIdx],ws=s.en.split(/\s+/),bl=[];
-  if(ws.length<=3)bl=[0|Math.random()*ws.length];
-  else{var p1=0|Math.random()*ws.length;bl=[p1];if(ws.length>5){var p2;do{p2=0|Math.random()*ws.length}while(p2===p1);bl.push(p2);}}
+  var s=sfSents[sfIdx],ws=s.en.split(/\s+/),bl=pickBlanks(ws);
   var h='';ws.forEach(function(w,i){if(bl.indexOf(i)>=0){var c=w.replace(/[.,!?;:'"]/g,'');h+='<input class="blank-input" data-answer="'+esc(c)+'" data-orig="'+esc(w)+'" style="width:'+Math.max(50,c.length*13)+'px" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"> ';}else h+=esc(w)+' ';});
   document.getElementById('sfArea').innerHTML='<div class="q-stem" style="font-size:13px;color:var(--pri)">'+esc(s.cn||'')+'</div><div style="text-align:center;margin-bottom:6px"><button class="speaker-btn" onclick="speak(\''+esc(s.en).replace(/'/g,"\\'")+'\')" style="font-size:24px">&#x1F50A;</button></div><div class="sent-fill">'+h+'</div><div style="text-align:center;margin-top:8px"><button class="btn btn-pri btn-sm" onclick="checkSF2()" style="width:auto;padding:8px 24px">\u786E\u8BA4</button> <button class="btn btn-out btn-sm" onclick="showSF2Ans()" style="width:auto;padding:8px 16px">\u67E5\u770B\u7B54\u6848</button></div><div class="answer-box" id="sfAnsBox"></div>';
 }
@@ -83,8 +117,9 @@ function checkSF2(){
   var inputs=document.querySelectorAll('#sfArea .blank-input'),ok=true;
   inputs.forEach(function(inp){var ans=inp.dataset.answer.toLowerCase().replace(/[.,!?;:'"]/g,''),val=(inp.value||'').trim().toLowerCase().replace(/[.,!?;:'"]/g,'');if(val===ans){inp.style.color='var(--ok)';inp.style.fontWeight='700';}else{inp.style.color='var(--err)';inp.style.fontWeight='700';ok=false;}});
   var box=document.getElementById('sfAnsBox');
-  if(ok){sfOk++;box.innerHTML='\u2705 \u6B63\u786E\uFF01';box.className='answer-box show';box.style.borderLeftColor='var(--ok)';box.style.background='#f0fdf4';box.style.color='#166534';setTimeout(function(){sfIdx++;renderSF2();},900);}
-  else{sfWr.push(sfIdx);box.innerHTML='\u274C \u5B8C\u6574\u53E5\u5B50\uFF1A<strong>'+esc(sfSents[sfIdx].en)+'</strong>';box.className='answer-box show';addToErrBank(null,sfSents[sfIdx]);setTimeout(function(){sfIdx++;renderSF2();},2500);}
+  var nextBtn='<div style="text-align:center;margin-top:10px"><button class="btn btn-pri btn-sm" onclick="sfIdx++;renderSF2();" style="width:auto;padding:8px 24px">\u4E0B\u4E00\u9898 \u25B6</button></div>';
+  if(ok){sfOk++;box.innerHTML='\u2705 \u6B63\u786E\uFF01'+nextBtn;box.className='answer-box show';box.style.borderLeftColor='var(--ok)';box.style.background='#f0fdf4';box.style.color='#166534';}
+  else{sfWr.push(sfIdx);box.innerHTML='\u274C \u5B8C\u6574\u53E5\u5B50\uFF1A<strong>'+esc(sfSents[sfIdx].en)+'</strong>'+nextBtn;box.className='answer-box show';addToErrBank(null,sfSents[sfIdx]);}
 }
 function showSF2Ans(){var box=document.getElementById('sfAnsBox');box.innerHTML='\u{1F4A1} '+esc(sfSents[sfIdx].en);box.className='answer-box show';}
 
@@ -104,8 +139,9 @@ function renderSW2(){
 function checkSW2(){
   var s=swSents2[swIdx2],input=(document.getElementById('swInput2').value||'').trim().toLowerCase().replace(/[^a-z0-9\s]/g,''),target=s.en.toLowerCase().replace(/[^a-z0-9\s]/g,'');
   var box=document.getElementById('swAnsBox2');
-  if(levenshtein(input,target)<=Math.max(3,Math.floor(target.length*.15))){swOk2++;box.innerHTML='\u2705 \u6B63\u786E\uFF01';box.className='answer-box show';box.style.borderLeftColor='var(--ok)';box.style.background='#f0fdf4';box.style.color='#166534';setTimeout(function(){swIdx2++;renderSW2();},1000);}
-  else{swWr2.push(swIdx2);box.innerHTML='\u274C \u7B54\u6848\uFF1A<strong>'+esc(s.en)+'</strong>';box.className='answer-box show';addToErrBank(null,s);setTimeout(function(){swIdx2++;renderSW2();},3000);}
+  var nextBtn='<div style="text-align:center;margin-top:10px"><button class="btn btn-pri btn-sm" onclick="swIdx2++;renderSW2();" style="width:auto;padding:8px 24px">\u4E0B\u4E00\u9898 \u25B6</button></div>';
+  if(levenshtein(input,target)<=Math.max(3,Math.floor(target.length*.15))){swOk2++;box.innerHTML='\u2705 \u6B63\u786E\uFF01'+nextBtn;box.className='answer-box show';box.style.borderLeftColor='var(--ok)';box.style.background='#f0fdf4';box.style.color='#166534';}
+  else{swWr2.push(swIdx2);box.innerHTML='\u274C \u7B54\u6848\uFF1A<strong>'+esc(s.en)+'</strong>'+nextBtn;box.className='answer-box show';addToErrBank(null,s);}
 }
 function showSW2Ans(){var box=document.getElementById('swAnsBox2');box.innerHTML='\u{1F4A1} '+esc(swSents2[swIdx2].en);box.className='answer-box show';}
 
