@@ -125,7 +125,7 @@ function updHeader(id){
 // ============ UTILS ============
 function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=0|Math.random()*(i+1),t=a[i];a[i]=a[j];a[j]=t;}return a;}
-function speak(text,lang){if(!window.speechSynthesis)return;speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang=lang||'en-US';u.rate=.8;speechSynthesis.speak(u);}
+function speak(text,lang){if(!window.speechSynthesis)return;speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang=lang||'en-US';u.rate=0.8;u.pitch=1.0;u.volume=1.0;speechSynthesis.speak(u);}
 function levenshtein(a,b){var m=a.length,n=b.length,d=[];for(var i=0;i<=m;i++)d[i]=[i];for(var j=0;j<=n;j++)d[0][j]=j;for(i=1;i<=m;i++)for(j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n];}
 function dots(cid,total,cur,wrongs){var h='';for(var i=0;i<total;i++){var c='quiz-dot';if(i<cur)c+=wrongs.indexOf(i)>=0?' wrong-dot':' done';else if(i===cur)c+=' cur';h+='<div class="'+c+'"></div>';}document.getElementById(cid).innerHTML=h;}
 function getUnit(id){return db.units.find(function(u){return u.id===id;});}
