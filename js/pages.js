@@ -326,6 +326,26 @@ var PRESETS=[
   {en:'I\'m going to build my house tomorrow.',cn:'\u6211\u660E\u5929\u518D\u5EFA\u623F\u5B50\u3002'},
   {en:'You should build your house now.',cn:'\u4F60\u5E94\u8BE5\u73B0\u5728\u5C31\u5EFA\u623F\u5B50\u3002'},
   {en:'Don\'t wait until tomorrow.',cn:'\u4ECA\u65E5\u4E8B\uFF0C\u4ECA\u65E5\u6BD5\u3002'}
+]},
+{id:'u_5bu6',name:'5BU6 - Holidays',words:[
+  {en:'holiday',cn:'\u5047\u65E5\uFF1B\u5047\u671F'},{en:'clear',cn:'\u6E05\u6F88\u7684'},
+  {en:'seafood',cn:'\u6D77\u9C9C'},{en:'hotel',cn:'\u65C5\u9986'},
+  {en:'island',cn:'\u5C9B'},{en:'butterfly',cn:'\u8774\u8776'},
+  {en:'how long',cn:'\u591A\u4E45'},{en:'go swimming',cn:'\u53BB\u6E38\u6CF3'},
+  {en:'in the south of',cn:'\u5728...\u7684\u5357\u90E8'},{en:'all year round',cn:'\u4E00\u5E74\u5230\u5934'},
+  {en:'wonderful',cn:'\u6781\u597D\u7684'},{en:'in a hotel by the sea',cn:'\u5728\u4E34\u6D77\u7684\u9152\u5E97'},
+  {en:'Sea World',cn:'\u6D77\u6D0B\u4E16\u754C'},{en:'take notes',cn:'\u8BB0\u7B14\u8BB0'},
+  {en:'warm enough',cn:'\u8DB3\u591F\u6E29\u6696'},{en:'tortoise',cn:'\u4E4C\u9F9F'},
+  {en:'We\'ll = We will',cn:'\u6211\u4EEC\u5C06...'},{en:'beaches with clear water',cn:'\u6709\u5E72\u51C0\u6D77\u6C34\u7684\u6C99\u6EE9'},
+  {en:'loud voice',cn:'\u5927\u58F0'},{en:'in the south of China',cn:'\u5728\u4E2D\u56FD\u5357\u90E8'},
+  {en:'make no noise',cn:'\u4E0D\u53D1\u51FA\u566A\u58F0'}
+],sentences:[
+  {en:'How do we get there?',cn:'\u6211\u4EEC\u5C06\u600E\u4E48\u53BB\u90A3\uFF1F'},
+  {en:'We get there by plane.',cn:'\u6211\u4EEC\u5C06\u4E58\u98DE\u673A\u53BB\u90A3\u3002'},
+  {en:'How long will we stay in Sanya?',cn:'\u6211\u4EEC\u5C06\u5728\u4E09\u4E9A\u5F85\u591A\u4E45\uFF1F'},
+  {en:'We\'ll stay there for five days.',cn:'\u6211\u4EEC\u5C06\u5F85 5 \u5929\u3002'},
+  {en:'What will we do?',cn:'\u6211\u4EEC\u5C06\u505A\u4EC0\u4E48\uFF1F'},
+  {en:'There are many wonderful beaches on the island and the weather is nice all year round.',cn:'\u5C9B\u4E0A\u6709\u8BB8\u591A\u6781\u597D\u7684\u6C99\u6EE9\uFF0C\u5E76\u4E14\u90A3\u513F\u7684\u5929\u6C14\u5168\u5E74\u90FD\u5F88\u597D\u3002'}
 ]}
 ];
 
