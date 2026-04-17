@@ -288,6 +288,29 @@ function launchTest(type){
 
 // ============ PRESET WORDBANKS ============
 var PRESETS=[
+{id:'u_5bu1',name:'5BU1 - Tidy Up',words:[
+  {en:'tidy',cn:'\u6574\u7406\uFF1B\u6574\u6D01\u7684'},{en:'mess',cn:'\u810F\u4E71'},
+  {en:'let',cn:'\u8BA9'},{en:'sock',cn:'\u889C\u5B50'},
+  {en:'yours',cn:'\u4F60\u7684\uFF1B\u4F60\u4EEC\u7684'},{en:'cap',cn:'\u5E3D\u5B50'},
+  {en:'crayon',cn:'\u8721\u7B14'},{en:'mine',cn:'\u6211\u7684'},
+  {en:'umbrella',cn:'\u96E8\u4F1E'},{en:'nail',cn:'\u9489\u5B50'},
+  {en:'drop',cn:'\u4F7F\u843D\u4E0B\uFF1B\u6389\u843D'},{en:'second',cn:'\u79D2\uFF08\u65F6\u95F4\u5355\u4F4D\uFF09'},
+  {en:'stick',cn:'\u7C98\u4F4F'},{en:'theirs',cn:'\u4ED6\u4EEC\u7684\uFF1B\u5979\u4EEC\u7684\uFF1B\u5B83\u4EEC\u7684'},
+  {en:'hers',cn:'\u5979\u7684'},{en:'tidy up',cn:'\u6574\u7406\u597D'},
+  {en:'(be) full of',cn:'\u88C5\u6EE1...'},{en:'a few',cn:'\u51E0\u4E2A\uFF1B\u4E00\u4E9B'},
+  {en:'stick to',cn:'\u575A\u6301\uFF1B\u7C98\u4F4F'},{en:'put...on...',cn:'\u628A...\u653E\u5728...\u4E0A\u9762'},
+  {en:'put...in...',cn:'\u628A...\u653E\u5728...\u91CC\u9762'}
+],sentences:[
+  {en:'Whose socks are those?',cn:'\u90A3\u4E9B\u889C\u5B50\u662F\u8C01\u7684\uFF1F'},
+  {en:'Are they yours? No, they aren\'t.',cn:'\u8FD9\u4E9B\u662F\u4F60\u7684\u5417\uFF1F\u4E0D\uFF0C\u5B83\u4EEC\u4E0D\u662F\u3002'},
+  {en:'Can you put Paul\'s T-shirt on his bed?',cn:'\u4F60\u80FD\u628A\u4FDD\u7F57\u7684T\u6064\u886B\u653E\u5728\u4ED6\u7684\u5E8A\u4E0A\u5417\uFF1F'},
+  {en:'Whose cap is this?',cn:'\u8FD9\u4E2A\u662F\u8C01\u7684\u5E3D\u5B50\uFF1F'},
+  {en:'The room is now clean and tidy.',cn:'\u8FD9\u95F4\u623F\u95F4\u73B0\u5728\u5E72\u51C0\u53C8\u6574\u6D01\u3002'},
+  {en:'It is full of nails.',cn:'\u8FD9\u4E2A\u88C5\u6EE1\u4E86\u9489\u5B50\u3002'},
+  {en:'All the nails fall on the floor.',cn:'\u6240\u6709\u7684\u9489\u5B50\u6389\u5728\u4E86\u5730\u4E0A\u3002'},
+  {en:'In a few seconds, the floor is clean again.',cn:'\u5728\u51E0\u79D2\u949F\u5185\uFF0C\u8FD9\u4E2A\u5730\u677F\u53C8\u5E72\u51C0\u4E86\u3002'},
+  {en:'Are these crayons yours, Peter?',cn:'\u8FD9\u4E9B\u662F\u4F60\u7684\u8721\u7B14\u5417\uFF0C\u5F7C\u5F97\uFF1F'}
+]},
 {id:'u_5bu2',name:'5BU2 - Moving Around',words:[
   {en:'why',cn:'\u4E3A\u4EC0\u4E48'},{en:'because',cn:'\u56E0\u4E3A'},
   {en:'study',cn:'\u4E66\u623F'},{en:'dining room',cn:'\u9910\u5385'},
