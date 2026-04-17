@@ -288,6 +288,30 @@ function launchTest(type){
 
 // ============ PRESET WORDBANKS ============
 var PRESETS=[
+{id:'u_5bu3',name:'5BU3 - In the Future',words:[
+  {en:'future',cn:'\u5C06\u6765\uFF1B\u672A\u6765'},{en:'stand',cn:'\u7AD9\uFF0C\u7AD9\u4F4F'},
+  {en:'machine',cn:'\u673A\u5668'},{en:'will',cn:'\u5C06\uFF1B\u5C06\u4F1A'},
+  {en:'do exercise',cn:'\u8FD0\u52A8\uFF1B\u953B\u70BC\uFF1B\u6D3B\u52A8'},{en:'get up early',cn:'\u65E9\u8D77\u5E8A'},
+  {en:'easily',cn:'\u5BB9\u6613\u5730'},{en:'study hard',cn:'\u52AA\u529B\u5B66\u4E60'},
+  {en:'more',cn:'\u66F4\u591A\u7684'},{en:'in the future',cn:'\u5728\u5C06\u6765'},
+  {en:'in front of',cn:'\u5728......\u524D\u9762'},{en:'take a photo',cn:'\u62CD\u7167'},
+  {en:'a pair of glasses',cn:'\u4E00\u526F\u773C\u955C'},{en:'take a photo of sb',cn:'\u7ED9\u67D0\u4EBA\u62CD\u7167'},
+  {en:'wear glasses',cn:'\u6234\u773C\u955C'},{en:'do exercise',cn:'\u505A\u8FD0\u52A8'},
+  {en:'(be) weak in',cn:'\u4E0D\u64C5\u957F'},{en:'not...any more',cn:'\u4E0D\u518D'},
+  {en:'know about',cn:'\u77E5\u9053'},{en:'(be) good at',cn:'\u64C5\u957F\u4E8E'},
+  {en:'be late for school',cn:'\u4E0A\u5B66\u8FDF\u5230'},{en:'won\'t = will not',cn:'\u5C06\u4E0D\u4F1A'}
+],sentences:[
+  {en:'I\'ll be a teacher.',cn:'\u6211\u5C06\u4F1A\u6210\u4E3A\u4E00\u540D\u8001\u5E08\u3002'},
+  {en:'I won\'t wear glasses.',cn:'\u6211\u5C06\u6765\u4E0D\u6234\u773C\u955C\u3002'},
+  {en:'Will she wear glasses?',cn:'\u5979\u5C06\u6765\u6234\u773C\u955C\u5417\uFF1F'},
+  {en:'Kitty wants to know about her future.',cn:'\u51EF\u8482\u60F3\u8981\u77E5\u9053\u5979\u7684\u5C06\u6765\u3002'},
+  {en:'She stands in front of a magic machine and takes a photo.',cn:'\u5979\u7AD9\u5728\u673A\u5668\u524D\u9762\u5E76\u4E14\u62CD\u7167\u76F8\u3002'},
+  {en:'There are some words on the back.',cn:'\u90A3\u513F\u80CC\u9762\u6709\u4E00\u4E9B\u5355\u8BCD\u3002'},
+  {en:'I am good at Maths, but I am weak in English.',cn:'\u6211\u64C5\u957F\u6570\u5B66\uFF0C\u4F46\u662F\u6211\u5728\u82F1\u8BED\u4E0A\u5F88\u5F31\u3002'},
+  {en:'I am often late for school.',cn:'\u6211\u7ECF\u5E38\u4E0A\u5B66\u8FDF\u5230\u3002'},
+  {en:'I do not like sport and I get tired easily.',cn:'\u6211\u4E0D\u559C\u6B22\u505A\u8FD0\u52A8\u5E76\u4E14\u5BB9\u6613\u7D2F\u3002'},
+  {en:'I will not be late for school any more.',cn:'\u6211\u4E0A\u5B66\u4E0D\u518D\u8FDF\u5230\u3002'}
+]},
 {id:'u_5bu4',name:'5BU4 - Book Week',words:[
   {en:'storybook',cn:'\u6545\u4E8B\u4E66'},{en:'buy',cn:'\u4E70'},{en:'story',cn:'\u6545\u4E8B'},{en:'dictionary',cn:'\u5B57\u5178\uFF1B\u8BCD\u5178'},
   {en:'magazine',cn:'\u6742\u5FD7'},{en:'newspaper',cn:'\u62A5\u7EB8'},{en:'week',cn:'\u5468\uFF1B\u661F\u671F'},{en:'student',cn:'\u5B66\u751F'},
