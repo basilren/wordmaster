@@ -288,6 +288,30 @@ function launchTest(type){
 
 // ============ PRESET WORDBANKS ============
 var PRESETS=[
+{id:'u_5bu2',name:'5BU2 - Moving Around',words:[
+  {en:'why',cn:'\u4E3A\u4EC0\u4E48'},{en:'because',cn:'\u56E0\u4E3A'},
+  {en:'study',cn:'\u4E66\u623F'},{en:'dining room',cn:'\u9910\u5385'},
+  {en:'goose',cn:'\u5927\u96C1'},{en:'change',cn:'\u6539\u53D8'},
+  {en:'place',cn:'\u5730\u65B9'},{en:'twice',cn:'\u4E24\u6B21'},
+  {en:'every',cn:'\u6BCF\uFF1B\u6BCF\u4E2A'},{en:'north',cn:'\u5317\u65B9'},
+  {en:'south',cn:'\u5357\u65B9'},{en:'enough',cn:'\u8DB3\u591F\u7684'},
+  {en:'then',cn:'\u7136\u540E'},{en:'all day',cn:'\u4E00\u5929\u5230\u665A'},
+  {en:'quiet',cn:'\u5B89\u9759\u7684'},{en:'purse',cn:'\u94B1\u5305'},
+  {en:'from...to...',cn:'\u4ECE...\u5230...'},{en:'move around',cn:'\u7ED5\u7740...\u6765\u56DE\u8F6C'},
+  {en:'fly south',cn:'\u5F80\u5357\u98DE'},{en:'fly north',cn:'\u5F80\u5317\u98DE'}
+],sentences:[
+  {en:'Why do you like it?',cn:'\u4F60\u4E3A\u4EC0\u4E48\u559C\u6B22\u5B83\uFF1F'},
+  {en:'Because it\'s so big!',cn:'\u56E0\u4E3A\u5B83\u5F88\u5927\uFF01'},
+  {en:'Because it\'s quiet. I can read and write there.',cn:'\u56E0\u4E3A\u5B83\u5F88\u5B89\u9759\u3002\u6211\u53EF\u4EE5\u5728\u8FD9\u91CC\u8BFB\u4E66\u548C\u5199\u5B57\u3002'},
+  {en:'Do you know why?',cn:'\u4F60\u77E5\u9053\u4E3A\u4EC0\u4E48\u5417\uFF1F'},
+  {en:'What about you?',cn:'\u4F60\u5462\uFF1F'},
+  {en:'Because they can play in the garden all day.',cn:'\u56E0\u4E3A\u4ED6\u4EEC\u53EF\u4EE5\u5728\u82B1\u56ED\u73A9\u4E00\u6574\u5929\u3002'},
+  {en:'Wild geese have busy lives.',cn:'\u5927\u96C1\u7684\u751F\u6D3B\u5F88\u5FD9\u788C\u3002'},
+  {en:'They fly from one place to another.',cn:'\u4ED6\u4EEC\u4ECE\u4E00\u4E2A\u5730\u65B9\u98DE\u5230\u53E6\u4E00\u4E2A\u5730\u65B9\u3002'},
+  {en:'They change homes twice every year.',cn:'\u6BCF\u5E74\u4ED6\u4EEC\u642C\u5BB6\u4E24\u6B21\u3002'},
+  {en:'In spring, they fly north. In autumn, they fly south.',cn:'\u5728\u6625\u5929\uFF0C\u4ED6\u4EEC\u98DE\u5230\u5317\u65B9\u3002\u5728\u79CB\u5929\uFF0C\u4ED6\u4EEC\u98DE\u5230\u5357\u65B9\u3002'},
+  {en:'Why do wild geese move around so much?',cn:'\u4E3A\u4EC0\u4E48\u5927\u96C1\u6765\u56DE\u79FB\u52A8\u5982\u6B64\u9891\u7E41\u5462\uFF1F'}
+]},
 {id:'u_5bu3',name:'5BU3 - In the Future',words:[
   {en:'future',cn:'\u5C06\u6765\uFF1B\u672A\u6765'},{en:'stand',cn:'\u7AD9\uFF0C\u7AD9\u4F4F'},
   {en:'machine',cn:'\u673A\u5668'},{en:'will',cn:'\u5C06\uFF1B\u5C06\u4F1A'},
