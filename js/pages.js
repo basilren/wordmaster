@@ -297,6 +297,34 @@ function launchTest(type){
 
 // ============ PRESET WORDBANKS ============
 var PRESETS=[
+{id:'u_5bu7',name:'5BU7 - Open Day',words:[
+  {en:'Open Day',cn:'\u5F00\u653E\u65E5'},{en:'on 30th April',cn:'\u5728 4 \u6708 30 \u65E5'},
+  {en:'ask...about',cn:'\u95EE\u2026\u5173\u4E8E'},{en:'at two o\'clock',cn:'\u5728 2 \u70B9\u6574'},
+  {en:'in the afternoon',cn:'\u5728\u4E0B\u5348'},{en:'at the school gate',cn:'\u5728\u5B66\u6821\u5927\u95E8'},
+  {en:'What will they do?',cn:'\u4ED6\u4EEC\u4F1A\u505A\u4EC0\u4E48\uFF1F'},{en:'visit',cn:'\u53C2\u89C2'},
+  {en:'first',cn:'\u9996\u5148'},{en:'next',cn:'\u63A5\u4E0B\u53BB'},
+  {en:'then',cn:'\u7136\u540E'},{en:'after that',cn:'\u7136\u540E'},
+  {en:'finally',cn:'\u6700\u540E'},{en:'art room',cn:'\u7F8E\u672F\u5BA4'},
+  {en:'hall',cn:'\u5927\u5385\u3001\u5927\u5802'},{en:'library',cn:'\u56FE\u4E66\u9986'},
+  {en:'meeting room',cn:'\u4F1A\u8BAE\u5BA4'},{en:'welcome',cn:'\u6B22\u8FCE'},
+  {en:'take sb. to...',cn:'\u5E26\u67D0\u4EBA\u53BB\u2026'},{en:'tell sb. about...',cn:'\u544A\u8BC9\u67D0\u4EBA\u5173\u4E8E\u2026'},
+  {en:'show sb. sth.',cn:'\u5C55\u793A\u7ED9\u67D0\u4EBA\u770B'},{en:'sing for sb.',cn:'\u4E3A\u67D0\u4EBA\u5531\u6B4C'},
+  {en:'project',cn:'\u9879\u76EE'},{en:'on the board',cn:'\u5728\u677F\u4E0A'},
+  {en:'have tea',cn:'\u559D\u8336'},{en:'have cake',cn:'\u5403\u86CB\u7CD5'},
+  {en:'complete',cn:'\u5B8C\u6210'},{en:'activity',cn:'\u6D3B\u52A8'},
+  {en:'Parent\'s Evening',cn:'\u5BB6\u957F\u4E4B\u591C'}
+],sentences:[
+  {en:'First, they\'ll visit our classroom.',cn:'\u9996\u5148\uFF0C\u4ED6\u4EEC\u5C06\u53C2\u89C2\u6211\u4EEC\u7684\u6559\u5BA4\u3002'},
+  {en:'Next, they\'ll visit the art room.',cn:'\u7136\u540E\uFF0C\u4ED6\u4EEC\u5C06\u53C2\u89C2\u7F8E\u672F\u6559\u5BA4\u3002'},
+  {en:'Then they\'ll go to the hall.',cn:'\u63A5\u7740\uFF0C\u4ED6\u4EEC\u5C06\u53BB\u793C\u5802\u3002'},
+  {en:'After that, they\'ll go to the library.',cn:'\u4E4B\u540E\uFF0C\u4ED6\u4EEC\u5C06\u53BB\u56FE\u4E66\u9986\u3002'},
+  {en:'Finally, they\'ll meet the teachers in the meeting room.',cn:'\u6700\u540E\uFF0C\u4ED6\u4EEC\u5C06\u5728\u4F1A\u8BAE\u5BA4\u548C\u8001\u5E08\u4EEC\u89C1\u9762\u3002'},
+  {en:'Ms Guo welcomes the parents at the school gate.',cn:'\u90ED\u8001\u5E08\u5728\u5B66\u6821\u95E8\u53E3\u6B22\u8FCE\u5BB6\u957F\u4EEC\u3002'},
+  {en:'She tells them about the lessons.',cn:'\u5979\u5411\u4ED6\u4EEC\u4ECB\u7ECD\u8BFE\u7A0B\u3002'},
+  {en:'The children show their parents some beautiful pictures.',cn:'\u540C\u5B66\u4EEC\u5411\u4ED6\u4EEC\u7684\u5BB6\u957F\u4EEC\u5C55\u793A\u7F8E\u4E3D\u7684\u56FE\u753B\u3002'},
+  {en:'The children sing for their parents.',cn:'\u5B69\u5B50\u4EEC\u7ED9\u4ED6\u4EEC\u7684\u5BB6\u957F\u4EEC\u5531\u6B4C\u3002'},
+  {en:'They look at the homework and projects on the board.',cn:'\u4ED6\u4EEC\u770B\u5C55\u677F\u4E0A\u7684\u4F5C\u4E1A\u548C\u8BFE\u9898\u3002'}
+]},
 {id:'u_5bu6',name:'5BU6 - Holidays',words:[
   {en:'holiday',cn:'\u5047\u65E5\uFF1B\u5047\u671F'},{en:'clear',cn:'\u6E05\u6F88\u7684'},
   {en:'seafood',cn:'\u6D77\u9C9C'},{en:'hotel',cn:'\u65C5\u9986'},
