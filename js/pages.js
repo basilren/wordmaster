@@ -297,6 +297,33 @@ function launchTest(type){
 
 // ============ PRESET WORDBANKS ============
 var PRESETS=[
+{id:'u_5bu8',name:'5BU8 - The Emperor\'s New Clothes',words:[
+  {en:'clothes',cn:'\u8863\u670D'},{en:'dress',cn:'\u8FDE\u8863\u88D9'},
+  {en:'sweater',cn:'\u6BDB\u8863'},{en:'coat',cn:'\u5916\u5957'},
+  {en:'trousers',cn:'\u88E4\u5B50'},{en:'shoes',cn:'\u978B'},
+  {en:'shirt',cn:'\u886C\u886B'},{en:'try...on/try on...',cn:'\u8BD5\u7A7F'},
+  {en:'both',cn:'\uFF08\u4E24\u8005\uFF09\u90FD'},{en:'size',cn:'\u5C3A\u7801'},
+  {en:'a pair of',cn:'\u4E00\u53CC/\u6761'},{en:'emperor',cn:'\u7687\u5E1D'},
+  {en:'only',cn:'\u53EA\u6709'},{en:'nod with a big smile',cn:'\u70B9\u5934\u5FAE\u7B11'},
+  {en:'cry-cries',cn:'\u5927\u558A'},{en:'put...on/put on...',cn:'\u7A7F\u4E0A'},
+  {en:'walk in the street',cn:'\u8D70\u5728\u8857\u4E0A'},{en:'in his new clothes',cn:'\u7A7F\u7740\u65B0\u8863'},
+  {en:'keep quiet',cn:'\u4FDD\u6301\u5B89\u9759'},{en:'laugh',cn:'\u5927\u7B11'},
+  {en:'tiny',cn:'\u6781\u5C0F\u7684'},{en:'bow',cn:'\u97A0\u8EAC'},
+  {en:'owl',cn:'\u732B\u5934\u9E70'},{en:'ouch',cn:'\u54CE\u5466'},
+  {en:'traditional',cn:'\u4F20\u7EDF\u7684'},{en:'India',cn:'\u5370\u5EA6'}
+],sentences:[
+  {en:'Which dress do you like, the blue one or the pink one?',cn:'\u4F60\u559C\u6B22\u54EA\u6761\u88D9\u5B50\uFF0C\u84DD\u8272\u7684\u8FD8\u662F\u7C89\u8272\u7684\uFF1F'},
+  {en:'I like the pink one.',cn:'\u6211\u559C\u6B22\u7C89\u8272\u7684\u90A3\u6761\u3002'},
+  {en:'You can try both on.',cn:'\u4F60\u53EF\u4EE5\u90FD\u8BD5\u4E00\u8BD5\u3002'},
+  {en:'Which pair of trousers do you like, the white one or the brown one?',cn:'\u4F60\u559C\u6B22\u54EA\u6761\u88E4\u5B50\uFF0C\u767D\u8272\u7684\u8FD8\u662F\u68D5\u8272\u7684\uFF1F'},
+  {en:'Here you are. It\'s your size.',cn:'\u7ED9\u60A8\uFF01\u8FD9\u662F\u60A8\u7684\u5C3A\u7801\u3002'},
+  {en:'I\'ll try on the trousers.',cn:'\u6211\u8981\u8BD5\u4E00\u8BD5\u8FD9\u6761\u88E4\u5B50\u3002'},
+  {en:'One day, a man visit him with some nice clothes.',cn:'\u4E00\u5929\uFF0C\u4E00\u4E2A\u7537\u4EBA\u5E26\u7740\u4E00\u4E9B\u6F02\u4EAE\u7684\u8863\u670D\u62DC\u8BBF\u4E86\u4ED6\u3002'},
+  {en:'The emperor cannot see any clothes.',cn:'\u7687\u5E1D\u4E00\u4EF6\u8863\u670D\u90FD\u770B\u4E0D\u5230\u3002'},
+  {en:'But he nod with a big smile.',cn:'\u4F46\u662F\u4ED6\u5927\u7B11\u7740\u70B9\u70B9\u5934\u3002'},
+  {en:'The emperor walks in the street in his \'new clothes\'.',cn:'\u7687\u5E1D\u7A7F\u7740\u4ED6\u7684\u201C\u65B0\u8863\u201D\u8D70\u5728\u8857\u4E0A\u3002'},
+  {en:'People keep quiet, but a child laughs, \'Look! He isn\'t wearing any clothes!\'',cn:'\u4EBA\u4EEC\u4FDD\u6301\u5B89\u9759\uFF0C\u4F46\u662F\u4E00\u4E2A\u7537\u5B69\u7B11\u9053\uFF1A\u201C\u5FEB\u770B\uFF01\u4ED6\u6CA1\u7A7F\u8863\u670D\uFF01\u201D'}
+]},
 {id:'u_5bu7',name:'5BU7 - Open Day',words:[
   {en:'Open Day',cn:'\u5F00\u653E\u65E5'},{en:'on 30th April',cn:'\u5728 4 \u6708 30 \u65E5'},
   {en:'ask...about',cn:'\u95EE\u2026\u5173\u4E8E'},{en:'at two o\'clock',cn:'\u5728 2 \u70B9\u6574'},
